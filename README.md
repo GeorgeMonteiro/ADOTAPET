@@ -1,4 +1,4 @@
-# 🐾 Adopet
+# 🐾 AdotaPet
 
 Plataforma web para **adoção de animais domésticos**, conectando pessoas que desejam adotar com aquelas que querem doar pets de forma simples, rápida e segura.
 
