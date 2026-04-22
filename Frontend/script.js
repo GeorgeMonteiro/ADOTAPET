@@ -7,10 +7,27 @@ function toggleScreens() {
     registerCard.classList.toggle('hidden');
 }
 
-// Opcional: Adicionar alerta ao enviar os formulários
-document.querySelectorAll('form').forEach(form => {
-    form.addEventListener('submit', (e) => {
-        e.preventDefault();
-        alert('Botão funcionando! Dados enviados.');
+
+document.getElementById("cadastroForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const nome = document.getElementById("nome").value;
+    const email = document.getElementById("email").value;
+    const senha = document.getElementById("senha").value;
+
+    const resposta = await fetch("http://localhost:5001/cadastro", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ nome, email, senha })
     });
+
+    const dados = await resposta.json();
+
+    if (resposta.ok) {
+        alert(dados.mensagem);
+    } else {
+        alert(dados.erro);
+    }
 });
