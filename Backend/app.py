@@ -1,12 +1,19 @@
 from flask import Flask, request, jsonify
 import sqlite3
 from flask_cors import CORS
+import psycopg2
 
 app = Flask(__name__)
 CORS(app)
 
 def conectar_db():
-    return sqlite3.connect("banco.db")
+    return psycopg2.connect(
+        host="localhost",
+        database="adotapet",
+        user="meuusuario",
+        password="123456",
+        port="5432"
+    )
 
 def criar_tabela():
     conn = conectar_db()
@@ -14,7 +21,7 @@ def criar_tabela():
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS usuarios (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             nome TEXT NOT NULL,
             email TEXT UNIQUE NOT NULL,
             senha TEXT NOT NULL
@@ -42,9 +49,9 @@ def cadastro():
         cursor = conn.cursor()
 
         cursor.execute(
-            "INSERT INTO usuarios (nome, email, senha) VALUES (?, ?, ?)",
+            "INSERT INTO usuarios (nome, email, senha) VALUES (%s, %s, %s)",
             (nome, email, senha)
-        )
+)
 
         conn.commit()
         conn.close()
