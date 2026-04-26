@@ -7,27 +7,56 @@ function toggleScreens() {
     registerCard.classList.toggle('hidden');
 }
 
+// ===== CADASTRO =====
+const cadastroForm = document.getElementById("cadastroForm");
 
-document.getElementById("cadastroForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
+if (cadastroForm) {
+    cadastroForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
 
-    const nome = document.getElementById("nome").value;
-    const email = document.getElementById("email").value;
-    const senha = document.getElementById("senha").value;
+        const nome = document.getElementById("nomeCadastro").value;
+        const email = document.getElementById("emailCadastro").value;
+        const senha = document.getElementById("senhaCadastro").value;
 
-    const resposta = await fetch("http://localhost:5001/cadastro", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ nome, email, senha })
+        const resposta = await fetch("http://localhost:5001/cadastro", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ nome, email, senha })
+        });
+
+        const dados = await resposta.json();
+        alert(resposta.ok ? dados.mensagem : dados.erro);
     });
+}
 
-    const dados = await resposta.json();
 
-    if (resposta.ok) {
-        alert(dados.mensagem);
-    } else {
-        alert(dados.erro);
-    }
-});
+// ===== LOGIN =====
+const loginForm = document.getElementById("loginForm");
+
+if (loginForm) {
+    loginForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const email = document.getElementById("emailLogin").value;
+        const senha = document.getElementById("senhaLogin").value;
+
+        try {
+            const resposta = await fetch("http://localhost:5001/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ email, senha })
+            });
+
+            const dados = await resposta.json();
+            alert(resposta.ok ? dados.mensagem : dados.erro);
+
+        } catch (erro) {
+            console.error("Erro:", erro);
+            alert("Erro ao conectar com o servidor");
+        }
+    });
+}
