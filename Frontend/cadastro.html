@@ -2,40 +2,55 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AdotaPet - Cadastro</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 <body>
     <header class="navbar">
         <nav>
             <a href="index.html">início</a>
             <a href="#">sobre nós</a>
-            <a href="#">animais para Adoção</a>
+            <a href="#">animais para adoção</a>
         </nav>
-        <button class="btn-header">Criar uma conta</button>
+        <button class="btn-header" onclick="location.href='login.html'">Já tenho conta</button>
     </header>
 
     <main class="container">
         <section class="card">
-            <h2>Seja muito bem-vindo (a)!</h2>
-            <form id="cadastroForm" action="#">
+            <h2>Criar Conta</h2>
+            <form id="cadastroForm">
                 <div class="input-group">
-                    <label>Nome:</label>
-                    <input type="text" id="nomeCadastro"  required>
+                    <label for="nomeCadastro">Nome Completo:</label>
+                    <input type="text" id="nomeCadastro" placeholder="Seu nome completo" required>
                 </div>
+
                 <div class="input-group">
-                    <label>E-mail:</label>
-                    <input type="email" id="emailCadastro" required>
+                    <label for="emailCadastro">E-mail:</label>
+                    <input type="email" id="emailCadastro" placeholder="exemplo@email.com" required>
                 </div>
+
                 <div class="input-group">
-                    <label>Senha:</label>
-                    <input type="password" id="senhaCadastro" required>
+                    <label for="senhaCadastro">Senha:</label>
+                    <input type="password" id="senhaCadastro" placeholder="Crie uma senha" required>
                 </div>
+
+                <div class="input-group">
+                    <label for="confirmaSenha">Confirme sua Senha:</label>
+                    <input type="password" id="confirmaSenha" placeholder="Repita a senha" required>
+                </div>
+
+                <div class="captcha-container" style="display: flex; justify-content: center; margin-bottom: 20px;">
+                    <div class="g-recaptcha" data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"></div>
+                </div>
+
                 <button type="submit" class="btn-submit">Cadastrar</button>
             </form>
-            <p class="footer-text">Já tem uma conta? <a href="login.html" class="link-highlight">Faça login</a></p>
+            <p class="footer-text">Já é cadastrado? <a href="login.html" class="link-highlight">Faça login</a></p>
         </section>
     </main>
+
     <script src="script.js"></script>
 </body>
 </html>
