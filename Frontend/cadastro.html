@@ -34,6 +34,14 @@
                 <div class="input-group">
                     <label for="senhaCadastro">Senha:</label>
                     <input type="password" id="senhaCadastro" placeholder="Crie uma senha" required>
+                    
+                    <div id="password-requirements">
+                        <p id="req-length" class="invalid">✖ Mínimo de 8 caracteres</p>
+                        <p id="req-nums" class="invalid">✖ Mínimo de 2 números</p>
+                        <p id="req-upper" class="invalid">✖ Pelo menos uma letra maiúscula</p>
+                        <p id="req-lower" class="invalid">✖ Pelo menos uma letra minúscula</p>
+                        <p id="req-special" class="invalid">✖ Pelo menos um caractere especial (@, #, $, etc.)</p>
+                    </div>
                 </div>
 
                 <div class="input-group">
@@ -41,7 +49,7 @@
                     <input type="password" id="confirmaSenha" placeholder="Repita a senha" required>
                 </div>
 
-                <div class="captcha-container" style="display: flex; justify-content: center; margin-bottom: 20px;">
+                <div class="captcha-container">
                     <div class="g-recaptcha" data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"></div>
                 </div>
 

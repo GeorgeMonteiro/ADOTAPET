@@ -1,5 +1,3 @@
-/* --- CONFIGURAÇÕES GERAIS --- */
-/* Estilos existentes no seu projeto */
 * {
     margin: 0;
     padding: 0;
@@ -8,7 +6,7 @@
 }
 
 body {
-    background-color: #98ac7b; /* Verde oliva do seu projeto */
+    background-color: #98ac7b;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -30,7 +28,7 @@ body {
 }
 
 .btn-header {
-    background-color: #ff7e7e; /* Rosa salmão do seu projeto */
+    background-color: #ff7e7e;
     color: white;
     border: none;
     padding: 10px 25px;
@@ -83,7 +81,30 @@ body {
     outline: none;
 }
 
-/* Centralização do Captcha */
+/* --- REGRAS DE SENHA --- */
+#password-requirements {
+    background-color: #f9f9f9;
+    padding: 12px;
+    border-radius: 8px;
+    margin-top: 10px;
+    font-size: 12px;
+}
+
+#password-requirements p {
+    margin: 4px 0;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.invalid {
+    color: #cc0000; /* Vermelho */
+}
+
+.valid {
+    color: #28a745; /* Verde */
+}
+
+/* --- CAPTCHA E BOTÕES --- */
 .captcha-container {
     display: flex;
     justify-content: center;
