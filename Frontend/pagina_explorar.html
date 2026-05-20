@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AdotaPet - Explorar Pets</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        adota: {
+                            bg: '#93b082',       /* Verde oliva do fundo principal */
+                            card: '#c3d3ba',     /* Verde pastel dos containers/filtros */
+                            coral: '#f37676',    /* Coral do botão Buscar e Ver Detalhes */
+                            'coral-hover': '#e26363',
+                            textDark: '#000000'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        fredoka: ['Fredoka', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-adota-bg font-sans min-h-screen text-adota-textDark">
+
+    <header class="max-w-7xl mx-auto px-6 pt-6 flex items-center justify-between relative z-50">
+        <nav class="flex items-center gap-8">
+            <a href="#" class="font-fredoka text-xl font-semibold text-white border-b-2 border-white pb-1 tracking-wide">
+                Explorar pets
+            </a>
+            <a href="#" class="font-fredoka text-xl font-medium text-white/80 hover:text-white pb-1 transition-all">
+                Meus pets
+            </a>
+            <a href="#" class="font-fredoka text-xl font-medium text-white/80 hover:text-white pb-1 transition-all">
+                Mensagens
+            </a>
+        </nav>
+        
+        <div class="relative">
+            <button id="user-menu-btn" class="flex items-center gap-2 text-white font-fredoka text-lg focus:outline-none hover:opacity-90 transition-opacity">
+                <div class="w-8 h-8 rounded-full bg-white/20 border border-white flex items-center justify-center overflow-hidden">
+                    <span class="text-xs font-sans font-bold">RM</span>
+                </div>
+                <span id="user-display-name">Rafael Monteiro</span>
+                <svg class="w-4 h-4 transition-transform duration-200" id="user-menu-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+            </button>
+
+            <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-60 bg-white rounded-xl shadow-lg border border-adota-card/30 overflow-hidden font-fredoka py-1 z-50">
+                <a href="Perfil_Dashboard.html" class="flex items-center gap-2 px-4 py-2.5 text-base text-gray-700 hover:bg-adota-card/20 transition-colors">
+                    <svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                    </svg>
+                    Meu Perfil
+                </a>
+                <a href="#" class="flex items-center gap-2 px-4 py-2.5 text-base text-gray-700 hover:bg-adota-card/20 transition-colors">
+                    <svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                    </svg>
+                    Meus Animais Cadastrados
+                </a>
+                <hr class="border-gray-100 my-1">
+                <button id="btn-logout" class="w-full flex items-center gap-2 px-4 py-2.5 text-base text-red-600 hover:bg-red-50 transition-colors text-left">
+                    <svg class="w-5 h-5 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                    </svg>
+                    Sair
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-6 space-y-6">
+        
+        <section class="bg-adota-card rounded-[24px] p-6 sm:p-8 shadow-sm">
+            <form id="filter-form" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 items-end gap-4">
+                
+                <div class="flex flex-col gap-2">
+                    <label class="font-fredoka text-xl font-semibold px-1">Animal</label>
+                    <select id="filter-type" class="w-full bg-white px-4 py-2.5 rounded-lg text-base font-medium outline-none border border-transparent focus:border-adota-coral transition-all cursor-pointer">
+                        <option value="todos">Todos</option>
+                        <option value="cachorro">Cachorro</option>
+                        <option value="gato">Gato</option>
+                    </select>
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <label class="font-fredoka text-xl font-semibold px-1">Raça</label>
+                    <select id="filter-breed" class="w-full bg-white px-4 py-2.5 rounded-lg text-base font-medium outline-none border border-transparent focus:border-adota-coral transition-all cursor-pointer">
+                        <option value="todas">Todas as raças</option>
+                    </select>
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <label class="font-fredoka text-xl font-semibold px-1">Tamanho</label>
+                    <select id="filter-size" class="w-full bg-white px-4 py-2.5 rounded-lg text-base font-medium outline-none border border-transparent focus:border-adota-coral transition-all cursor-pointer">
+                        <option value="todos">Todos os tamanhos</option>
+                        <option value="pequeno">pequeno</option>
+                        <option value="médio">médio</option>
+                        <option value="grande">grande</option>
+                    </select>
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <label class="font-fredoka text-xl font-semibold px-1">Localização</label>
+                    <select id="filter-location" class="w-full bg-white px-4 py-2.5 rounded-lg text-base font-medium outline-none border border-transparent focus:border-adota-coral transition-all cursor-pointer">
+                        <option value="todas">Todas as cidades</option>
+                        <option value="Paulista, PE">Paulista, PE</option>
+                        <option value="Recife, PE">Recife, PE</option>
+                    </select>
+                </div>
+
+                <div class="flex justify-end lg:col-span-1 sm:col-span-2 lg:w-full">
+                    <button type="submit" class="w-full bg-adota-coral hover:bg-adota-coral-hover text-white font-fredoka text-xl font-semibold py-2.5 rounded-full shadow-sm transition-all tracking-wide">
+                        Buscar
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <section class="pb-12">
+            <div id="pets-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                </div>
+            
+            <div id="no-pets-message" class="hidden text-center text-white font-fredoka text-xl py-12">
+                Nenhum animalzinho encontrado com esses filtros. 🐾
+            </div>
+        </section>
+
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
