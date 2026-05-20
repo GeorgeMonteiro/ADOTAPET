@@ -3,6 +3,7 @@ from flask_cors import CORS
 from db import criar_tabela
 from usuarios import criar_usuario, buscar_usuario_por_email
 import psycopg2
+import bcrypt
 
 app = Flask(__name__)
 CORS(app)
@@ -44,12 +45,16 @@ def login():
         usuario = buscar_usuario_por_email(email)
 
         if usuario:
-            if usuario[3] == senha:
-                return jsonify({"mensagem": "Login realizado com sucesso!"})
-            else:
-                return jsonify({"erro": "Senha incorreta"}), 401
+           senha_hash = usuario[3]
+
+        if bcrypt.checkpw(
+            senha.encode('utf-8'),
+            senha_hash.encode('utf-8')
+        ):
+            return jsonify({"mensagem": "Login realizado com sucesso!"})
+
         else:
-            return jsonify({"erro": "Usuário não encontrado"}), 404
+            return jsonify({"erro": "Senha incorreta"}), 401
 
     except Exception as e:
         return jsonify({"erro": str(e)}), 500
