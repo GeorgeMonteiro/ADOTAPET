@@ -60,7 +60,7 @@
                 <a href="pagina_explorar.html" class="font-fredoka text-xl font-medium text-white/80 hover:text-white pb-1 smooth-transition">
                     Explorar pets
                 </a>
-                <a href="#" class="font-fredoka text-xl font-medium text-white/80 hover:text-white pb-1 smooth-transition">
+                <a href="meus_animais.html" class="font-fredoka text-xl font-medium text-white/80 hover:text-white pb-1 smooth-transition">
                     Meus pets
                 </a>
                 <a href="#" class="font-fredoka text-xl font-medium text-white/80 hover:text-white pb-1 smooth-transition">
@@ -78,10 +78,10 @@
                 </button>
 
                 <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-site-lightgreen/30 overflow-hidden font-fredoka py-1 z-50 text-sm">
-                    <a href="#" class="flex items-center gap-2 px-4 py-2.5 text-gray-700 bg-slate-50 font-semibold">
+                    <a href="Perfil_Dashboard.html" class="flex items-center gap-2 px-4 py-2.5 text-gray-700 bg-slate-50 font-semibold hover:bg-site-lightgreen/10 transition-colors">
                         <i class="fa-solid fa-user opacity-70"></i> Meu Perfil
                     </a>
-                    <a href="#" class="flex items-center gap-2 px-4 py-2.5 text-gray-700 hover:bg-site-lightgreen/20 transition-colors">
+                    <a href="meus_animais.html" class="flex items-center gap-2 px-4 py-2.5 text-gray-700 hover:bg-site-lightgreen/20 transition-colors">
                         <i class="fa-solid fa-paw opacity-70"></i> Meus Animais Cadastrados
                     </a>
                     <hr class="border-gray-100 my-1">
@@ -291,6 +291,26 @@
         </div>
     </div>
 
+    <div id="success-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z- p-4 font-fredoka">
+        <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-sm w-full text-center shadow-2xl scale-95 opacity-0 transition-all duration-300 transform" id="modal-content">
+            <div class="w-20 h-20 bg-site-lightgreen/30 text-site-green rounded-full flex items-center justify-center mx-auto mb-4 text-4xl">
+                <i class="fa-solid fa-paw animate-bounce"></i>
+            </div>
+            
+            <h3 class="text-2xl font-bold text-slate-900 mb-2">Pet Cadastrado!</h3>
+            <p class="text-slate-600 font-sans text-sm mb-6">O bichinho foi publicado com sucesso e já está disponível para receber pedidos de adoção.</p>
+            
+            <div class="space-y-3">
+                <a href="meus_animais.html" class="block w-full bg-site-green hover:bg-opacity-90 text-white font-semibold py-3 rounded-xl transition-colors shadow-sm">
+                    Ver Meus Animais
+                </a>
+                <button type="button" id="close-modal-btn" class="block w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-3 rounded-xl transition-colors">
+                    Cadastrar Outro Pet
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const breedsData = {
             gato: ["Siamês", "Persa", "Maine Coon", "Angorá", "Bengal", "Sem Raça Definida (SRD)"],
@@ -328,10 +348,14 @@
         const petForm = document.getElementById('pet-registration-form');
         const petsCountDisplay = document.getElementById('pets-count');
 
-        // Toasts e Estado
+        // Modais, Toasts e Estado
         const successToast = document.getElementById('success-toast');
         const toastTitle = document.getElementById('toast-title');
         const toastDesc = document.getElementById('toast-desc');
+        const successModal = document.getElementById('success-modal');
+        const modalContent = document.getElementById('modal-content');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        
         let uploadedPhotos = [];
         let totalRegisteredPets = 0;
 
@@ -379,18 +403,15 @@
         if (userMenuBtn && userDropdown) {
             userMenuBtn.addEventListener('click', function(e) {
                 e.stopPropagation();
-                const isHidden = userDropdown.classList.contains('hidden');
-                if (isHidden) {
-                    userDropdown.classList.remove('hidden');
-                    if (userMenuArrow) userMenuArrow.classList.add('rotate-180');
-                } else {
-                    userDropdown.classList.add('hidden');
-                    if (userMenuArrow) userMenuArrow.classList.remove('rotate-180');
+                userDropdown.classList.toggle('hidden');
+                
+                if (userMenuArrow) {
+                    userMenuArrow.classList.toggle('rotate-180');
                 }
             });
 
-            document.addEventListener('click', function() {
-                if (!userDropdown.classList.contains('hidden')) {
+            document.addEventListener('click', function(e) {
+                if (!userMenuBtn.contains(e.target) && !userDropdown.contains(e.target)) {
                     userDropdown.classList.add('hidden');
                     if (userMenuArrow) userMenuArrow.classList.remove('rotate-180');
                 }
@@ -407,19 +428,16 @@
         }
 
         // ==========================================================
-        // LÓGICA DE ATUALIZAÇÃO DA FOTO (Com controle do placeholder)
+        // LÓGICA DE ATUALIZAÇÃO DA FOTO
         // ==========================================================
         avatarInput.addEventListener('change', function(e) {
-            const file = e.target.files; // Correção de segurança: pegar o primeiro item
+            const file = e.target.files;
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function(event) {
                     avatarImage.src = event.target.result;
-                    
-                    // Exibe a tag de imagem e oculta o ícone da silhueta
                     avatarImage.classList.remove('hidden');
                     avatarPlaceholder.classList.add('hidden');
-                    
                     triggerToast('Foto Atualizada!', 'Sua imagem de perfil foi alterada.');
                 };
                 reader.readAsDataURL(file);
@@ -494,17 +512,42 @@
             videoPreviewContainer.classList.add('hidden');
         });
 
+        // ==========================================================
+        // SUBMIT DO PET E EXIBIÇÃO DO BOX DE ADOÇÃO (ATUALIZADO)
+        // ==========================================================
         petForm.addEventListener('submit', function(e) {
             e.preventDefault();
             totalRegisteredPets++;
             petsCountDisplay.textContent = totalRegisteredPets;
-            triggerToast('Pet Cadastrado!', 'O animal foi publicado com sucesso!');
+            
+            // Limpa o formulário e arquivos
             petForm.reset();
             uploadedPhotos = [];
             renderPhotosGrid();
             removeVideoBtn.click();
             populateBreeds('cachorro');
+
+            // Exibe a Box de Sucesso de forma suave
+            if (successModal && modalContent) {
+                successModal.classList.remove('hidden');
+                // Pequeno timeout para engajar a transição visual do Tailwind
+                setTimeout(() => {
+                    modalContent.classList.remove('scale-95', 'opacity-0');
+                    modalContent.classList.add('scale-100', 'opacity-100');
+                }, 10);
+            }
         });
+
+        // Fechar Modal ao clicar no botão "Cadastrar Outro Pet"
+        if (closeModalBtn) {
+            closeModalBtn.addEventListener('click', () => {
+                modalContent.classList.remove('scale-100', 'opacity-100');
+                modalContent.classList.add('scale-95', 'opacity-0');
+                setTimeout(() => {
+                    successModal.classList.add('hidden');
+                }, 3000);
+            });
+        }
 
         function triggerToast(title, description) {
             toastTitle.textContent = title;

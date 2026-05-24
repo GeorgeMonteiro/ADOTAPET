@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AdotaPet - Meus Animais</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        adota: {
+                            verdeBg: '#98ac7b',
+                            card: '#F6F5F2',
+                            coral: '#ff7e7e',
+                            'coral-hover': '#ff6161',
+                            textDark: '#4a5d32'
+                        }
+                    },
+                    fontFamily: {
+                        fredoka: ['"Fredoka One"', 'cursive'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-adota-verdeBg min-height-screen flex flex-col">
+
+    <header class="navbar flex justify-between items-center px-6 py-4 md:px-12">
+        <div class="text-white font-bold text-2xl flex items-center gap-2">
+            <span class="bg-white text-adota-verdeBg p-1.5 rounded-xl font-fredoka">🐾</span> adotapet
+        </div>
+        <nav class="flex items-center gap-6">
+            <a href="pagina_explorar.html" class="text-white font-bold hover:underline">explorar</a>
+            <a href="meus_animais.html" class="text-white font-bold underline">meus pets</a>
+            </nav>
+    </header>
+
+    <main class="flex-1 max-w-6xl w-full mx-auto p-6 bg-white/10 rounded-[40px] shadow-lg my-6 backdrop-blur-sm">
+        <h1 class="text-white text-3xl font-bold mb-6 text-center md:text-left">Meus Animais Cadastrados</h1>
+        
+        <div id="meus-pets-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-center">
+            </div>
+
+        <div id="no-pets-message" class="hidden text-center py-12">
+            <p class="text-white text-xl font-medium">Você ainda não cadastrou nenhum animal para adoção.</p>
+            <a href="cadastrar_animal.html" class="inline-block mt-4 bg-adota-coral hover:bg-adota-coral-hover text-white px-6 py-2 rounded-full font-bold transition-all">Cadastrar Meu Primeiro Pet</a>
+        </div>
+    </main>
+
+    <div id="edit-modal" class="hidden fixed inset-0 bg-black/50 flex justify-center items-center p-4 z-50">
+        <div class="bg-white w-full max-w-md p-6 rounded-[30px] shadow-2xl relative">
+            <h3 class="text-adota-textDark text-2xl font-bold mb-4">Editar Informações</h3>
+            
+            <form id="edit-pet-form" class="flex flex-col gap-3">
+                <input type="hidden" id="edit-pet-id">
+                
+                <div>
+                    <label class="block text-sm font-bold text-gray-700">Idade</label>
+                    <input type="text" id="edit-pet-age" class="w-full p-2 border rounded-lg outline-none focus:border-adota-verdeBg" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700">Porte</label>
+                    <select id="edit-pet-size" class="w-full p-2 border rounded-lg outline-none focus:border-adota-verdeBg">
+                        <option value="Pequeno">Pequeno</option>
+                        <option value="Médio">Médio</option>
+                        <option value="Grande">Grande</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700">Localização</label>
+                    <input type="text" id="edit-pet-location" class="w-full p-2 border rounded-lg outline-none focus:border-adota-verdeBg" required>
+                </div>
+
+                <div class="flex justify-end gap-3 mt-4">
+                    <button type="button" onclick="closeEditModal()" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold px-4 py-2 rounded-full transition-colors">Cancelar</button>
+                    <button type="submit" class="bg-adota-verdeBg hover:opacity-90 text-white font-bold px-6 py-2 rounded-full transition-colors">Salvar Alterações</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="meus_animais.js"></script>
+</body>
+</html>
