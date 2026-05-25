@@ -36,28 +36,62 @@ def cadastro():
 # ===== LOGIN =====
 @app.route("/login", methods=["POST"])
 def login():
+
     dados = request.json
 
     email = dados.get("email")
     senha = dados.get("senha")
 
+    # valida campos vazios
+    if not email or not senha:
+        return jsonify({
+            "erro": "Email e senha são obrigatórios"
+        }), 400
+
     try:
+
+        # busca usuário pelo email
         usuario = buscar_usuario_por_email(email)
 
-        if usuario:
-           senha_hash = usuario[3]
+        # usuário não encontrado
+        if not usuario:
+            return jsonify({
+                "erro": "Usuário não encontrado"
+            }), 404
 
-        if bcrypt.checkpw(
-            senha.encode('utf-8'),
-            senha_hash.encode('utf-8')
-        ):
-            return jsonify({"mensagem": "Login realizado com sucesso!"})
+        # senha criptografada do banco
+        senha_hash = usuario[3]
 
+        # compara senha digitada com hash
+        senha_correta = bcrypt.checkpw(
+            senha.encode("utf-8"),
+            senha_hash.encode("utf-8")
+        )
+
+        # login válido
+        if senha_correta:
+
+            return jsonify({
+                "mensagem": "Login realizado com sucesso!",
+                "usuario": {
+                    "id": usuario[0],
+                    "nome": usuario[1],
+                    "email": usuario[2]
+                }
+            }), 200
+
+        # senha errada
         else:
-            return jsonify({"erro": "Senha incorreta"}), 401
+
+            return jsonify({
+                "erro": "Senha incorreta"
+            }), 401
 
     except Exception as e:
-        return jsonify({"erro": str(e)}), 500
+
+        return jsonify({
+            "erro": str(e)
+        }), 500
 
 
 if __name__ == "__main__":

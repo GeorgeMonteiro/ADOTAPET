@@ -130,36 +130,99 @@ if (cadastroForm) {
     });
 }
 
-// ===== LOGIN =====
-const loginForm = document.getElementById("loginForm");
-if (loginForm) {
-    loginForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const email = document.getElementById("emailLogin").value.trim();
-        const senha = document.getElementById("senhaLogin").value;
+document.addEventListener("DOMContentLoaded", () => {
+    
+    // ===== 1. LOGICA DA TELA DE LOGIN =====
+    const loginForm = document.getElementById("loginForm");
+    if (loginForm) {
+        loginForm.addEventListener("submit", async (event) => {
+            event.preventDefault();
 
-        try {
-            const resposta = await fetch("http://localhost:5001/login", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, senha })
-            });
-            
-            const dados = await resposta.json();
+            const email = document.getElementById("emailLogin").value;
+            const senha = document.getElementById("senhaLogin").value;
 
-            if (resposta.ok) {
-                localStorage.setItem('usuarioNome', dados.nome || 'Usuário');
-                window.location.href = "pagina_explorar.html";
-            } else {
-                alert(dados.erro || "E-mail ou senha incorretos.");
+            try {
+                const response = await fetch("http://127.0.0.1:5001/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, senha })
+                });
+
+                const dados = await response.json();
+
+                if (response.ok) {
+                    // Guarda os dados reais do usuário retornados pelo Flask no navegador
+                    localStorage.setItem("usuario_logado", JSON.stringify(dados.usuario));
+                    
+                    alert("Login realizado com sucesso!");
+                    window.location.href = "pagina_explorar.html";
+                } else {
+                    alert(`Erro: ${dados.erro}`);
+                }
+            } catch (error) {
+                console.error("Erro:", error);
+                alert("Erro ao conectar com o servidor.");
             }
-        } catch (erro) {
-            console.error("Erro na requisição de login:", erro);
-            alert("Não foi possível conectar ao servidor. Verifique sua conexão.");
-        }
-    });
-}
+        });
+    }
 
+    // ===== 2. CONTROLE DE SESSÃO E NOME DINÂMICO =====
+    // Executa em todas as páginas para verificar se existe alguém logado
+    const usuarioLogadoString = localStorage.getItem("usuario_logado");
+    
+    // Se estiver em uma página interna (como pagina_explorar ou meus_animais)
+    const ehPaginaPublica = window.location.pathname.includes("login.html") || window.location.pathname.includes("cadastro.html") || window.location.pathname.includes("index.html");
+
+    if (!usuarioLogadoString && !ehPaginaPublica) {
+        // Se NÃO tem usuário logado e tentou acessar uma página interna, manda pro login
+        alert("Você precisa fazer login para acessar esta página.");
+        window.location.href = "login.html";
+    } else if (usuarioLogadoString) {
+        // Se TEM usuário logado, vamos usar os dados dele
+        const usuario = JSON.parse(usuarioLogadoString);
+
+        // Altera o nome "Rafael Monteiro" para o nome do usuário atual no Header
+        const userDisplayName = document.getElementById("user-display-name");
+        const userInitialsCircle = document.querySelector("#user-menu-btn span.font-bold");
+
+        if (userDisplayName) {
+            userDisplayName.textContent = usuario.nome; // Define o nome vindo do banco
+        }
+        
+        if (userInitialsCircle) {
+            // Pega as primeiras letras do nome para fazer a inicial (Ex: "Lucas Silva" -> "LS")
+            const nomes = usuario.nome.split(" ");
+            const iniciais = nomes.length > 1 ? (nomes[0][0] + nomes[1][0]).toUpperCase() : nomes[0][0].toUpperCase();
+            userInitialsCircle.textContent = iniciais;
+        }
+    }
+
+    // ===== 3. COMPORTAMENTO DO MENU DROPDOWN E LOGOUT =====
+    const menuBtn = document.getElementById("user-menu-btn");
+    const dropdown = document.getElementById("user-dropdown");
+    const logoutBtn = document.getElementById("btn-logout");
+
+    if (menuBtn && dropdown) {
+        menuBtn.addEventListener("click", () => {
+            dropdown.classList.toggle("hidden");
+        });
+
+        document.addEventListener("click", (e) => {
+            if (!menuBtn.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.classList.add("hidden");
+            }
+        });
+    }
+
+    if (logoutBtn) {
+        logoutBtn.addEventListener("click", () => {
+            // Limpa o usuário do navegador ao deslogar
+            localStorage.removeItem("usuario_logado");
+            alert("Sessão encerrada!");
+            window.location.href = "login.html";
+        });
+    }
+});
 
 // ========================================================================
 // 2. SISTEMA DE EXPLORAÇÃO, FILTROS SELETIVOS E DROPDOWN
