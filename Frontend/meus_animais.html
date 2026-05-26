@@ -1,87 +1,211 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AdotaPet - Meus Animais</title>
+    <title>AdotaPet - Meus Animais Cadastrados</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <script src="https://cdn.tailwindcss.com"></script>
+    
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        adota: {
-                            verdeBg: '#98ac7b',
-                            card: '#F6F5F2',
-                            coral: '#ff7e7e',
-                            'coral-hover': '#ff6161',
-                            textDark: '#4a5d32'
+                        site: {
+                            green: '#93b082',       /* Verde oliva do fundo principal */
+                            lightgreen: '#c3d3ba',  /* Verde pastel dos containers */
+                            coral: '#f37676',       /* Coral/Salmão dos botões de ação */
+                            'coral-hover': '#e26363',
+                            dark: '#2d3748'
                         }
                     },
                     fontFamily: {
-                        fredoka: ['"Fredoka One"', 'cursive'],
+                        sans: ['Inter', 'sans-serif'],
+                        fredoka: ['Fredoka', 'sans-serif']
                     }
                 }
             }
         }
     </script>
+    
+    <style>
+        .smooth-transition {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #93b082;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c3d3ba;
+            border-radius: 4px;
+        }
+    </style>
 </head>
-<body class="bg-adota-verdeBg min-height-screen flex flex-col">
+<body class="bg-site-green font-sans min-h-screen text-slate-800 flex flex-col">
 
-    <header class="navbar flex justify-between items-center px-6 py-4 md:px-12">
-        <div class="text-white font-bold text-2xl flex items-center gap-2">
-            <span class="bg-white text-adota-verdeBg p-1.5 rounded-xl font-fredoka">🐾</span> adotapet
+    <header class="bg-site-green border-b border-site-lightgreen/30 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between relative">
+            <div class="flex items-center gap-6">
+                <a href="pagina_explorar.html" class="font-fredoka text-xl font-medium text-white/80 hover:text-white pb-1 smooth-transition">
+                    Explorar pets
+                </a>
+                <a href="meus_animais.html" class="font-fredoka text-xl font-medium text-white border-b-2 border-white pb-1 smooth-transition">
+                    Meus pets
+                </a>
+                <a href="#" class="font-fredoka text-xl font-medium text-white/80 hover:text-white pb-1 smooth-transition">
+                    Mensagens
+                </a>
+            </div>
+            
+            <div class="relative">
+                <button id="user-menu-btn" class="flex items-center gap-2 text-white font-fredoka text-base focus:outline-none hover:opacity-90 transition-opacity">
+                    <div class="w-8 h-8 rounded-full bg-white/20 border border-white flex items-center justify-center overflow-hidden">
+                        <span id="header-avatar-initials" class="text-xs font-sans font-bold">U</span>
+                    </div>
+                    <span id="header-user-name">Usuário</span>
+                    <i id="user-menu-arrow" class="fa-solid fa-chevron-down text-xs smooth-transition"></i>
+                </button>
+
+                <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-site-lightgreen/30 overflow-hidden font-fredoka py-1 z-50 text-sm">
+                    <a href="Perfil_Dashboard.html" class="flex items-center gap-2 px-4 py-2.5 text-gray-700 hover:bg-site-lightgreen/10 transition-colors">
+                        <i class="fa-solid fa-user opacity-70"></i> Meu Perfil
+                    </a>
+                    <a href="meus_animais.html" class="flex items-center gap-2 px-4 py-2.5 text-gray-700 bg-slate-50 font-semibold hover:bg-site-lightgreen/20 transition-colors">
+                        <i class="fa-solid fa-paw opacity-70"></i> Meus Animais Cadastrados
+                    </a>
+                    <hr class="border-gray-100 my-1">
+                    <button id="btn-logout" class="w-full flex items-center gap-2 px-4 py-2.5 text-red-600 hover:bg-red-50 transition-colors text-left">
+                        <i class="fa-solidfrom-bracket opacity-80"></i> Sair
+                    </button>
+                </div>
+            </div>
         </div>
-        <nav class="flex items-center gap-6">
-            <a href="pagina_explorar.html" class="text-white font-bold hover:underline">explorar</a>
-            <a href="meus_animais.html" class="text-white font-bold underline">meus pets</a>
-            </nav>
     </header>
 
-    <main class="flex-1 max-w-6xl w-full mx-auto p-6 bg-white/10 rounded-[40px] shadow-lg my-6 backdrop-blur-sm">
-        <h1 class="text-white text-3xl font-bold mb-6 text-center md:text-left">Meus Animais Cadastrados</h1>
-        
-        <div id="meus-pets-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-center">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full">
+        <div class="bg-site-lightgreen rounded-3xl p-6 sm:p-8 shadow-sm min-h-[400px]">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b border-white/20 pb-4 mb-6 gap-4">
+                <div>
+                    <h2 class="font-fredoka text-2xl font-bold text-slate-900">
+                        Meus Animais Cadastrados
+                    </h2>
+                    <p class="text-slate-700 text-sm mt-1">Gerencie os amiguinhos que você disponibilizou para adoção.</p>
+                </div>
+                <a href="Perfil_Dashboard.html" class="inline-flex items-center justify-center gap-2 bg-site-coral hover:bg-site-coral-hover text-white font-fredoka px-5 py-2.5 rounded-2xl smooth-transition shadow-sm">
+                    <i class="fa-solid fa-plus text-sm"></i> Cadastrar Novo Pet
+                </a>
             </div>
 
-        <div id="no-pets-message" class="hidden text-center py-12">
-            <p class="text-white text-xl font-medium">Você ainda não cadastrou nenhum animal para adoção.</p>
-            <a href="cadastrar_animal.html" class="inline-block mt-4 bg-adota-coral hover:bg-adota-coral-hover text-white px-6 py-2 rounded-full font-bold transition-all">Cadastrar Meu Primeiro Pet</a>
+            <div id="pets-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100 flex flex-col group">
+                    <div class="h-48 bg-slate-200 relative overflow-hidden">
+                        <div class="absolute inset-0 flex items-center justify-center text-slate-400">
+                            <i class="fa-solid fa-paw text-4xl"></i>
+                        </div>
+                        <span class="absolute top-2 right-2 bg-site-green text-white font-fredoka text-xs px-2.5 py-1 rounded-full font-medium">Cachorro</span>
+                    </div>
+                    <div class="p-4 flex-grow flex flex-col justify-between">
+                        <div>
+                            <h4 class="font-fredoka text-lg font-bold text-slate-900">Pipoca</h4>
+                            <p class="text-slate-500 text-xs font-semibold uppercase tracking-wide">Sem Raça Definida (SRD)</p>
+                            <p class="text-slate-600 text-sm mt-2 line-clamp-2 font-sans">Muito dócil, brincalhão e adora correr no quintal.</p>
+                        </div>
+                        <div class="pt-4 border-t border-slate-100 mt-4 flex items-center justify-between gap-2">
+                            <button class="flex-grow bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold font-fredoka py-2 rounded-xl transition-colors">
+                                Editar
+                            </button>
+                            <button class="bg-red-50 hover:bg-red-100 text-red-600 text-xs p-2 rounded-xl transition-colors" title="Excluir publicação">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
 
-    <div id="edit-modal" class="hidden fixed inset-0 bg-black/50 flex justify-center items-center p-4 z-50">
-        <div class="bg-white w-full max-w-md p-6 rounded-[30px] shadow-2xl relative">
-            <h3 class="text-adota-textDark text-2xl font-bold mb-4">Editar Informações</h3>
+    <script>
+        // Elementos do Cabeçalho e Dropdown
+        const userMenuBtn = document.getElementById('user-menu-btn');
+        const userDropdown = document.getElementById('user-dropdown');
+        const userMenuArrow = document.getElementById('user-menu-arrow');
+        const btnLogout = document.getElementById('btn-logout');
+        const headerUserName = document.getElementById('header-user-name');
+        const headerAvatarInitials = document.getElementById('header-avatar-initials');
+
+        // ==========================================================
+        // LÓGICA DE VALIDAÇÃO DE AUTENTICAÇÃO (CORRIGIDO)
+        // ==========================================================
+        function checarAutenticacao() {
+            // Coleta os dados utilizando a mesma chave do painel de perfil
+            const nomeSalvo = localStorage.getItem('usuarioNome');
+
+            // CORREÇÃO DO ERRO: Se a chave não existir ou estiver deslogado, vai para login.html
+            if (!nomeSalvo || nomeSalvo === 'Usuário Anônimo') {
+                alert("Sessão expirada ou não identificada. Por favor, faça login para gerenciar seus pets!");
+                window.location.href = "login.html";
+                return false;
+            }
+
+            // Se o usuário existir, injeta as informações no cabeçalho
+            if(headerUserName) headerUserName.textContent = nomeSalvo;
             
-            <form id="edit-pet-form" class="flex flex-col gap-3">
-                <input type="hidden" id="edit-pet-id">
+            const initials = nomeSalvo.split(' ').map(n => n).join('').toUpperCase().slice(0, 2);
+            if(headerAvatarInitials) headerAvatarInitials.textContent = initials;
+            
+            return true;
+        }
+
+        // Executa a checagem no exato momento em que o DOM carrega
+        document.addEventListener('DOMContentLoaded', () => {
+            const autenticado = checarAutenticacao();
+            
+            if (autenticado) {
+                console.log("Usuário validado com sucesso! Carregando dados dos pets...");
+                // Aqui você pode rodar a função de preencher dinamicamente a sua grade, se houver
+            }
+        });
+
+        // ==========================================================
+        // LÓGICA DO MENU DROPDOWN SUPERIOR
+        // ==========================================================
+        if (userMenuBtn && userDropdown) {
+            userMenuBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                userDropdown.classList.toggle('hidden');
                 
-                <div>
-                    <label class="block text-sm font-bold text-gray-700">Idade</label>
-                    <input type="text" id="edit-pet-age" class="w-full p-2 border rounded-lg outline-none focus:border-adota-verdeBg" required>
-                </div>
-                <div>
-                    <label class="block text-sm font-bold text-gray-700">Porte</label>
-                    <select id="edit-pet-size" class="w-full p-2 border rounded-lg outline-none focus:border-adota-verdeBg">
-                        <option value="Pequeno">Pequeno</option>
-                        <option value="Médio">Médio</option>
-                        <option value="Grande">Grande</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-sm font-bold text-gray-700">Localização</label>
-                    <input type="text" id="edit-pet-location" class="w-full p-2 border rounded-lg outline-none focus:border-adota-verdeBg" required>
-                </div>
+                if (userMenuArrow) {
+                    userMenuArrow.classList.toggle('rotate-180');
+                }
+            });
 
-                <div class="flex justify-end gap-3 mt-4">
-                    <button type="button" onclick="closeEditModal()" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold px-4 py-2 rounded-full transition-colors">Cancelar</button>
-                    <button type="submit" class="bg-adota-verdeBg hover:opacity-90 text-white font-bold px-6 py-2 rounded-full transition-colors">Salvar Alterações</button>
-                </div>
-            </form>
-        </div>
-    </div>
+            document.addEventListener('click', function(e) {
+                if (!userMenuBtn.contains(e.target) && !userDropdown.contains(e.target)) {
+                    userDropdown.classList.add('hidden');
+                    if (userMenuArrow) userMenuArrow.classList.remove('rotate-180');
+                }
+            });
 
-    <script src="meus_animais.js"></script>
+            if (btnLogout) {
+                btnLogout.addEventListener('click', function() {
+                    localStorage.removeItem('usuarioNome');
+                    localStorage.removeItem('usuarioEmail');
+                    alert("Sessão encerrada!");
+                    window.location.href = "login.html";
+                });
+            }
+        }
+    </script>
 </body>
 </html>
