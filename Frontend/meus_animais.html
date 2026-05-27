@@ -108,32 +108,16 @@
             </div>
 
             <div id="pets-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100 flex flex-col group">
-                    <div class="h-48 bg-slate-200 relative overflow-hidden">
-                        <div class="absolute inset-0 flex items-center justify-center text-slate-400">
-                            <i class="fa-solid fa-paw text-4xl"></i>
-                        </div>
-                        <span class="absolute top-2 right-2 bg-site-green text-white font-fredoka text-xs px-2.5 py-1 rounded-full font-medium">Cachorro</span>
-                    </div>
-                    <div class="p-4 flex-grow flex flex-col justify-between">
-                        <div>
-                            <h4 class="font-fredoka text-lg font-bold text-slate-900">Pipoca</h4>
-                            <p class="text-slate-500 text-xs font-semibold uppercase tracking-wide">Sem Raça Definida (SRD)</p>
-                            <p class="text-slate-600 text-sm mt-2 line-clamp-2 font-sans">Muito dócil, brincalhão e adora correr no quintal.</p>
-                        </div>
-                        <div class="pt-4 border-t border-slate-100 mt-4 flex items-center justify-between gap-2">
-                            <button class="flex-grow bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold font-fredoka py-2 rounded-xl transition-colors">
-                                Editar
-                            </button>
-                            <button class="bg-red-50 hover:bg-red-100 text-red-600 text-xs p-2 rounded-xl transition-colors" title="Excluir publicação">
-                                <i class="fa-solid fa-trash-can"></i>
-                            </button>
-                        </div>
-                    </div>
                 </div>
-            </div>
+
+            <p id="no-pets-message" class="text-center text-white font-fredoka hidden col-span-full mt-8">
+                Você ainda não cadastrou nenhum pet 🐾
+            </p>
         </div>
     </main>
+
+    <script src="meus_animais.js"></script>
+
 
     <script>
         // Elementos do Cabeçalho e Dropdown
@@ -145,36 +129,47 @@
         const headerAvatarInitials = document.getElementById('header-avatar-initials');
 
         // ==========================================================
-        // LÓGICA DE VALIDAÇÃO DE AUTENTICAÇÃO (CORRIGIDO)
+        // LÓGICA DE VALIDAÇÃO DE AUTENTICAÇÃO 
         // ==========================================================
         function checarAutenticacao() {
-            // Coleta os dados utilizando a mesma chave do painel de perfil
-            const nomeSalvo = localStorage.getItem('usuarioNome');
+            // Coleta a string guardada no login
+            const usuarioLogadoString = localStorage.getItem('usuario_logado');
 
-            // CORREÇÃO DO ERRO: Se a chave não existir ou estiver deslogado, vai para login.html
-            if (!nomeSalvo || nomeSalvo === 'Usuário Anônimo') {
-                alert("Sessão expirada ou não identificada. Por favor, faça login para gerenciar seus pets!");
-                window.location.href = "login.html";
+            // Se não existir, o utilizador não está logado
+            if (!usuarioLogadoString) {
+                console.warn("Nenhum utilizador logado detetado.");
                 return false;
             }
 
-            // Se o usuário existir, injeta as informações no cabeçalho
-            if(headerUserName) headerUserName.textContent = nomeSalvo;
-            
-            const initials = nomeSalvo.split(' ').map(n => n).join('').toUpperCase().slice(0, 2);
-            if(headerAvatarInitials) headerAvatarInitials.textContent = initials;
-            
-            return true;
+            try {
+                const usuario = JSON.parse(usuarioLogadoString);
+
+                if (!usuario || !usuario.nome) {
+                    return false;
+                }
+
+                // Injeta as informações no cabeçalho obtidas do objeto
+                if(headerUserName) headerUserName.textContent = usuario.nome;
+                
+                // Gera as iniciais do avatar de forma segura
+                const partesNome = usuario.nome.trim().split(/\s+/);
+                let initials = partesNome[0].charAt(0);
+                if (partesNome.length > 1) {
+                    initials += partesNome[partesNome.length - 1].charAt(0);
+                }
+                
+                if(headerAvatarInitials) headerAvatarInitials.textContent = initials.toUpperCase();
+                return true;
+
+            } catch(e) {
+                console.error("Erro ao ler dados da sessão:", e);
+                return false;
+            }
         }
 
         // Executa a checagem no exato momento em que o DOM carrega
         document.addEventListener('DOMContentLoaded', () => {
-            const autenticado = checarAutenticacao();
-            
-            if (autenticado) {
-                console.log("Usuário validado com sucesso! Carregando dados dos pets...");
-                // Aqui você pode rodar a função de preencher dinamicamente a sua grade, se houver
-            }
+            checarAutenticacao();
         });
 
         // ==========================================================
@@ -199,8 +194,8 @@
 
             if (btnLogout) {
                 btnLogout.addEventListener('click', function() {
-                    localStorage.removeItem('usuarioNome');
-                    localStorage.removeItem('usuarioEmail');
+                    // Remove a chave correta utilizada no sistema unificado
+                    localStorage.removeItem('usuario_logado');
                     alert("Sessão encerrada!");
                     window.location.href = "login.html";
                 });

@@ -129,7 +129,7 @@
                         <input type="text" id="user-name-input" value="" placeholder="Nome Completo" required class="w-full px-4 py-2.5 rounded-xl bg-white text-slate-800 outline-none focus:ring-2 focus:ring-site-coral/50 smooth-transition text-sm">
                     </div>
                     <div>
-                        <input type="email" id="user-email-input" value="" placeholder="E-mail" required class="w-full px-4 py-2.5 rounded-xl bg-white text-slate-800 outline-none focus:ring-2 focus:ring-site-coral/50 smooth-transition text-sm">
+                        <input type="email" id="user-email-input" value="" placeholder="E-mail" required class="w-full px-4 py-2.5 rounded-xl bg-white text-slate-800 outline-none focus:ring-2 focus:ring-site-coral/50 smooth-transition text-sm" disabled>
                     </div>
                     <div>
                         <input type="text" id="user-phone-input" value="" placeholder="WhatsApp" class="w-full px-4 py-2.5 rounded-xl bg-white text-slate-800 outline-none focus:ring-2 focus:ring-site-coral/50 smooth-transition text-sm">
@@ -291,7 +291,7 @@
         </div>
     </div>
 
-    <div id="success-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z- p-4 font-fredoka">
+    <div id="success-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 font-fredoka">
         <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-sm w-full text-center shadow-2xl scale-95 opacity-0 transition-all duration-300 transform" id="modal-content">
             <div class="w-20 h-20 bg-site-lightgreen/30 text-site-green rounded-full flex items-center justify-center mx-auto mb-4 text-4xl">
                 <i class="fa-solid fa-paw animate-bounce"></i>
@@ -360,41 +360,60 @@
         let totalRegisteredPets = 0;
 
         // ==========================================================
-        // LÓGICA DE INICIALIZAÇÃO DE DADOS DO USUÁRIO LOGADO
+        // LÓGICA DE INICIALIZAÇÃO DE DADOS DO USUÁRIO LOGADO 
         // ==========================================================
         function carregarDadosUsuario() {
-            const nomeSalvo = localStorage.getItem('usuarioNome') || 'Usuário Anônimo';
-            const emailSalvo = localStorage.getItem('usuarioEmail') || (nomeSalvo.toLowerCase().replace(/\s+/g, '') + '@email.com');
+            const raw = localStorage.getItem('usuario_logado');
 
-            if(headerUserName) headerUserName.textContent = nomeSalvo;
-            if(displayUserName) displayUserName.textContent = nomeSalvo;
-            if(displayUserEmail) displayUserEmail.textContent = emailSalvo;
+            if (!raw) {
+                alert("Você precisa fazer login para acessar esta página.");
+                window.location.href = "login.html";
+                return;
+            }
 
-            if(userNameInput) userNameInput.value = nomeSalvo;
-            if(userEmailInput) userEmailInput.value = emailSalvo;
-            if(userPhoneInput) userPhoneInput.value = '(81) 99999-9999';
+            let usuario;
+            try {
+                usuario = JSON.parse(raw);
+            } catch (e) {
+                localStorage.removeItem('usuario_logado');
+                window.location.href = "login.html";
+                return;
+            }
 
-            const initials = nomeSalvo.split(' ').map(n => n).join('').toUpperCase().slice(0, 2);
-            if(headerAvatarInitials) headerAvatarInitials.textContent = initials;
+            // Normalização definitiva idêntica ao meus_animais.html
+            if (usuario.usuario) {
+                usuario = usuario.usuario;
+            }
+
+            const nome = usuario.nome?.trim() || 'Usuário Anônimo';
+            const email = usuario.email || '';
+
+            // 1. Injeta o nome real no Cabeçalho (Header)
+            if (headerUserName) headerUserName.textContent = nome;
+
+            // 2. Injeta o nome real e e-mail no Card Lateral Esquerdo
+            if (displayUserName) displayUserName.textContent = nome;
+            if (displayUserEmail) displayUserEmail.textContent = email;
+
+            // 3. Preenche os campos do formulário com os dados reais
+            if (userNameInput) userNameInput.value = nome;
+            if (userEmailInput) userEmailInput.value = email;
+            if (userPhoneInput) userPhoneInput.value = usuario.telefone || '';
+
+            // 4. Injeta as iniciais reais no Avatar do Header
+            const partes = nome.split(/\s+/);
+            let initials = partes[0][0];
+            if (partes.length > 1) initials += partes[partes.length - 1][0];
+
+            if (headerAvatarInitials) {
+                headerAvatarInitials.textContent = initials.toUpperCase();
+            }
         }
 
-        // Executa o carregamento assim que a página abre
+        // AGORA SIM EXECUTA ASSIM QUE O DOM FOR CARREGADO
         document.addEventListener('DOMContentLoaded', () => {
             carregarDadosUsuario();
-            populateBreeds('cachorro');
-        });
-
-        // Modificar dados locais e atualizar a sessão
-        userForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const novoNome = userNameInput.value;
-            const novoEmail = userEmailInput.value;
-
-            localStorage.setItem('usuarioNome', novoNome);
-            localStorage.setItem('usuarioEmail', novoEmail);
-
-            carregarDadosUsuario();
-            triggerToast('Perfil Salvo!', 'Os dados do perfil foram modificados com sucesso.');
+            populateBreeds('cachorro'); // Popula raças padrão ao carregar
         });
 
         // ==========================================================
@@ -419,8 +438,7 @@
 
             if (btnLogout) {
                 btnLogout.addEventListener('click', function() {
-                    localStorage.removeItem('usuarioNome');
-                    localStorage.removeItem('usuarioEmail');
+                    localStorage.removeItem('usuario_logado');
                     alert("Sessão encerrada!");
                     window.location.href = "login.html";
                 });
@@ -431,7 +449,7 @@
         // LÓGICA DE ATUALIZAÇÃO DA FOTO
         // ==========================================================
         avatarInput.addEventListener('change', function(e) {
-            const file = e.target.files;
+            const file = e.target.files[0];
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function(event) {
@@ -499,7 +517,7 @@
         };
 
         videoInput.addEventListener('change', function(e) {
-            const file = e.target.files;
+            const file = e.target.files[0];
             if (file) {
                 videoPreviewPlayer.src = URL.createObjectURL(file);
                 videoPreviewContainer.classList.remove('hidden');
@@ -512,29 +530,53 @@
             videoPreviewContainer.classList.add('hidden');
         });
 
-        // ==========================================================
-        // SUBMIT DO PET E EXIBIÇÃO DO BOX DE ADOÇÃO (ATUALIZADO)
-        // ==========================================================
-        petForm.addEventListener('submit', function(e) {
+        // ============================================
+        // SUBMIT DO PET E EXIBIÇÃO DO BOX DE ADOÇÃO 
+        // ============================================
+        petForm.addEventListener('submit', async function(e) {
             e.preventDefault();
-            totalRegisteredPets++;
-            petsCountDisplay.textContent = totalRegisteredPets;
-            
-            // Limpa o formulário e arquivos
-            petForm.reset();
-            uploadedPhotos = [];
-            renderPhotosGrid();
-            removeVideoBtn.click();
-            populateBreeds('cachorro');
 
-            // Exibe a Box de Sucesso de forma suave
-            if (successModal && modalContent) {
-                successModal.classList.remove('hidden');
-                // Pequeno timeout para engajar a transição visual do Tailwind
-                setTimeout(() => {
-                    modalContent.classList.remove('scale-95', 'opacity-0');
-                    modalContent.classList.add('scale-100', 'opacity-100');
-                }, 10);
+            const raw = localStorage.getItem("usuario_logado");
+            let usuario = JSON.parse(raw);
+            if (usuario && usuario.usuario) usuario = usuario.usuario;
+
+            const especieSelecionada = document
+                .querySelector('.species-btn.border-site-coral')
+                .getAttribute('data-species');
+
+            const dadosPet = {
+                especie: especieSelecionada,
+                raca: document.getElementById("pet-breed").value,
+                idade: document.getElementById("pet-age").value,
+                porte: document.getElementById("pet-size").value,
+                genero: document.getElementById("pet-gender").value,
+                localizacao: "Recife - PE",
+                sobre: document.getElementById("pet-desc").value,
+                imagem_principal: uploadedPhotos.length > 0 ? uploadedPhotos[0].src : "",
+                dono_nome: usuario.nome,
+                dono_email: usuario.email
+            };
+
+            try {
+                const resposta = await fetch("http://localhost:5001/animais", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(dadosPet)
+                });
+
+                const dados = await resposta.json();
+
+                if (resposta.ok) {
+                    alert("Pet cadastrado com sucesso!");
+                    petForm.reset();
+                    uploadedPhotos = [];
+                    renderPhotosGrid();
+                } else {
+                    alert(dados.erro);
+                }
+            } catch (erro) {
+                console.error(erro);
+                alert("Erro ao conectar com o servidor.");
             }
         });
 
@@ -545,7 +587,7 @@
                 modalContent.classList.add('scale-95', 'opacity-0');
                 setTimeout(() => {
                     successModal.classList.add('hidden');
-                }, 3000);
+                }, 300);
             });
         }
 

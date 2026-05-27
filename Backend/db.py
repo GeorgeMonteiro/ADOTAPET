@@ -1,10 +1,16 @@
-import psycopg2
 import os
+import psycopg2
 from dotenv import load_dotenv
 
-load_dotenv()
+# Obtém o caminho absoluto da pasta onde o db.py está e localiza o ficheiro .env
+base_dir = os.path.dirname(os.path.abspath(__file__))
+load_dotenv(os.path.join(base_dir, ".env"))
 
 def conectar_db():
+
+    print("USER:", os.getenv("DB_USER"))
+    print("DB:", os.getenv("DB_NAME"))
+
     return psycopg2.connect(
         host=os.getenv("DB_HOST"),
         database=os.getenv("DB_NAME"),
@@ -17,12 +23,32 @@ def criar_tabela():
     conn = conectar_db()
     cursor = conn.cursor()
 
+    # Tabela de Usuários (Autenticação)
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS usuarios (
             id SERIAL PRIMARY KEY,
             nome TEXT NOT NULL,
             email TEXT UNIQUE NOT NULL,
             senha TEXT NOT NULL
+        )
+    """)
+    
+    # Tabela de Animais (Cadastro de Pets)
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS animais (
+            id SERIAL PRIMARY KEY,
+            especie TEXT NOT NULL,
+            raca TEXT NOT NULL,
+            idade TEXT,
+            porte TEXT,
+            genero TEXT,
+            localizacao TEXT,
+            sobre TEXT,
+            imagem_principal TEXT, 
+            galeria_fotos TEXT[],  
+            video TEXT,
+            dono_nome TEXT NOT NULL,
+            dono_email TEXT NOT NULL
         )
     """)
 
