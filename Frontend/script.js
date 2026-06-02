@@ -145,9 +145,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const dados = await response.json();
 
                 if (response.ok) {
-                    // Guarda o objeto completo do usuário retornado pelo Flask
                     localStorage.setItem("usuario_logado", JSON.stringify(dados.usuario));
-                    
                     alert("Login realizado com sucesso!");
                     window.location.href = "pagina_explorar.html";
                 } else {
@@ -170,7 +168,6 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
     } 
     
-    // Se existir usuário logado, atualiza a interface de navegação (Header)
     if (usuarioLogadoString) {
         const usuario = JSON.parse(usuarioLogadoString);
         const userDisplayName = document.getElementById("user-display-name");
@@ -181,14 +178,12 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         
         if (userMenuBtn) {
-            // CORREÇÃO AQUI: Tratamento seguro usando array ordenadamente para gerar as iniciais
             const partesNome = usuario.nome.trim().split(/\s+/);
-            let iniciais = partesNome[0].charAt(0); // Pega primeira letra do primeiro nome
+            let iniciais = partesNome[0].charAt(0); 
             if (partesNome.length > 1) {
-                iniciais += partesNome[partesNome.length - 1].charAt(0); // Pega primeira letra do último nome
+                iniciais += partesNome[partesNome.length - 1].charAt(0);
             }
             
-            // Tenta buscar tanto o seletor font-sans quanto o font-bold para evitar quebras de layout
             const avatarSpan = userMenuBtn.querySelector('span.font-sans') || userMenuBtn.querySelector('span.font-bold');
             if (avatarSpan) avatarSpan.textContent = iniciais.toUpperCase();
         }
@@ -224,7 +219,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (btnLogout) {
         btnLogout.addEventListener('click', function() {
-            localStorage.removeItem("usuario_logado"); // Limpa o ID e nome corretos do banco
+            localStorage.removeItem("usuario_logado");
             alert("Sessão encerrada!");
             window.location.href = "login.html";
         });
@@ -254,22 +249,32 @@ document.addEventListener("DOMContentLoaded", () => {
 
             list.forEach(pet => {
                 const card = document.createElement('div');
-                card.className = "bg-adota-card rounded-[20px] p-4 w-full max-w-[260px] mx-auto flex flex-col gap-3 shadow-sm";
+                // Alterado para refletir o design e elevação de meus_animais
+                card.className = "bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100 flex flex-col";
                 
                 card.innerHTML = `
-                    <div class="w-full aspect-square rounded-lg overflow-hidden bg-white/40">
+                    <div class="h-48 bg-slate-200 relative overflow-hidden">
                         <img src="${pet.image || 'https://via.placeholder.com/400'}" alt="${pet.breed}" class="w-full h-full object-cover" loading="lazy">
+                        <span class="absolute top-2 right-2 bg-site-coral text-white text-xs font-bold px-2 py-1 rounded-xl uppercase font-fredoka">
+                            ${pet.species || 'Pet'}
+                        </span>
                     </div>
-                    <div class="grid grid-cols-2 gap-y-1 text-[14px] font-bold text-adota-textDark leading-tight">
-                        <div class="truncate pr-1" title="${pet.breed}">${pet.breed}</div>
-                        <div class="text-left pl-2">${pet.gender}</div>
-                        <div>${pet.age}</div>
-                        <div class="text-left pl-2">${pet.size}</div>
-                        <div class="col-span-2 pt-0.5 font-semibold text-adota-textDark/90">${pet.location}</div>
+
+                    <div class="p-4 flex flex-col flex-grow justify-between">
+                        <div>
+                            <h4 class="font-fredoka font-bold text-slate-900 text-lg mb-1">${pet.breed}</h4>
+                            <p class="text-sm text-slate-600 line-clamp-2">${pet.description || 'Sem descrição.'}</p>
+                            <span class="text-xs text-slate-400 block mt-2">
+                                <i class="fa-solid fa-location-dot mr-1"></i>${pet.location || 'Não informada'}
+                            </span>
+                        </div>
+                        
+                        <div class="mt-4 pt-3 border-t border-slate-100">
+                            <button class="w-full bg-adota-coral hover:bg-adota-coral-hover text-white font-fredoka text-sm font-semibold py-2 rounded-xl transition-colors shadow-sm text-center">
+                                Ver detalhes
+                            </button>
+                        </div>
                     </div>
-                    <button class="w-full bg-adota-coral hover:bg-adota-coral-hover text-white font-fredoka font-medium py-1.5 rounded-full transition-colors shadow-sm text-center">
-                        Ver detalhes
-                    </button>
                 `;
                 fragment.appendChild(card);
             });
@@ -311,17 +316,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 const selectedSize = sizeEl ? sizeEl.value : 'todos';
                 const selectedLocation = locationEl ? locationEl.value : 'todas';
 
-                console.log("Filtros para consulta:", { selectedType, selectedBreed, selectedSize, selectedLocation });
+                buscarAnimais(selectedType,selectedBreed,selectedSize,selectedLocation);
             });
         }
 
-        // Inicialização da tela de exploração
         updateBreedSelect('todos');
-        renderPets([]); 
+
+        buscarAnimais("todos", "todas", "todos", "todas");
     }
 });
 
-// Mantido fora do DOMContentLoaded pois serve de dicionário de configuração estável
 const breedsData = {
     gato: [
         "Sem Raça Definida (SRD)", "Siamês", "Persa", 
@@ -334,3 +338,85 @@ const breedsData = {
         "Sem raça definida (SRD)"
     ]
 };
+
+async function buscarAnimais(especie, raca, porte, localizacao) {
+    try {
+        const params = new URLSearchParams({
+            especie,
+            raca,
+            porte,
+            localizacao
+        });
+
+        const resposta = await fetch(`http://localhost:5001/explorar-animais?${params}`);
+        const pets = await resposta.json();
+
+        if (!resposta.ok) {
+            throw new Error(pets.erro);
+        }
+
+        const petsFormatados = pets.map(pet => ({
+            image: pet.imagem_principal ? `http://localhost:5001/${pet.imagem_principal}` : 'https://via.placeholder.com/400',
+            breed: pet.breed || "Sem Raça",
+            gender: pet.gender || "Não informado",
+            age: pet.age || "Idade indefinida",
+            size: pet.size || "Porte indefinido",
+            location: pet.location || "Brasil",
+            species: pet.species || (especie !== 'todos' ? especie : 'Pet'),
+            description: pet.description || ''
+        }));
+
+        const petsContainer = document.getElementById('pets-container');
+        const noPetsMessage = document.getElementById('no-pets-message');
+
+        if (petsContainer) {
+            petsContainer.innerHTML = '';
+            
+            if (petsFormatados.length === 0) {
+                if (noPetsMessage) noPetsMessage.classList.remove('hidden');
+                return;
+            }
+            if (noPetsMessage) noPetsMessage.classList.add('hidden');
+
+            const fragment = document.createDocumentFragment();
+
+            petsFormatados.forEach(pet => {
+                const card = document.createElement('div');
+                // Mudança aplicada aqui também para manter o visual unificado após a busca por filtros
+                card.className = "bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100 flex flex-col";
+                
+                card.innerHTML = `
+                    <div class="h-48 bg-slate-200 relative overflow-hidden">
+                        <img src="${pet.image}" alt="${pet.breed}" class="w-full h-full object-cover" loading="lazy">
+                        <span class="absolute top-2 right-2 bg-site-coral text-white text-xs font-bold px-2 py-1 rounded-xl uppercase font-fredoka">
+                            ${pet.species}
+                        </span>
+                    </div>
+
+                    <div class="p-4 flex flex-col flex-grow justify-between">
+                        <div>
+                            <h4 class="font-fredoka font-bold text-slate-900 text-lg mb-1">${pet.breed}</h4>
+                            <p class="text-sm text-slate-600 line-clamp-2">${pet.description || 'Sem descrição.'}</p>
+                            <span class="text-xs text-slate-400 block mt-2">
+                                <i class="fa-solid fa-location-dot mr-1"></i>${pet.location || 'Não informada'}
+                            </span>
+                        </div>
+                        
+                        <div class="mt-4 pt-3 border-t border-slate-100">
+                            <button class="w-full bg-adota-coral hover:bg-adota-coral-hover text-white font-fredoka text-sm font-semibold py-2 rounded-xl transition-colors shadow-sm text-center">
+                                Ver detalhes
+                            </button>
+                        </div>
+                    </div>
+                `;
+                fragment.appendChild(card);
+            });
+            
+            petsContainer.appendChild(fragment);
+        }
+
+    } catch (erro) {
+        console.error(erro);
+        alert("Erro ao buscar animais.");
+    }
+}

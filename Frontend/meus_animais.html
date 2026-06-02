@@ -86,7 +86,7 @@
                     </a>
                     <hr class="border-gray-100 my-1">
                     <button id="btn-logout" class="w-full flex items-center gap-2 px-4 py-2.5 text-red-600 hover:bg-red-50 transition-colors text-left">
-                        <i class="fa-solidfrom-bracket opacity-80"></i> Sair
+                        <i class="fa-solid fa-arrow-right-from-bracket opacity-80"></i> Sair
                     </button>
                 </div>
             </div>
@@ -116,6 +116,78 @@
         </div>
     </main>
 
+    <div id="modal-editar" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl w-full max-w-md p-6 shadow-2xl relative font-sans text-slate-800">
+            <h3 class="font-fredoka text-2xl text-slate-900 mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-pen-to-square text-site-coral"></i> Editar Informações do Pet
+            </h3>
+            
+            <form id="form-editar-pet" class="space-y-4">
+                <input type="hidden" id="edit-pet-id">
+                
+               <div>
+    <label class="block text-sm font-semibold mb-1 text-slate-700">Idade Estimada</label>
+    <div class="relative">
+        <select id="edit-pet-idade" class="w-full px-3 py-2 border border-slate-200 rounded-xl outline-none focus:border-site-coral appearance-none bg-white">
+            <option value="" disabled selected>Selecione...</option>
+            <option value="filhote">Filhote (Menos de 1 ano)</option>
+            <option value="jovem">Jovem (1 a 2 anos)</option>
+            <option value="adulto">Adulto (3 a 7 anos)</option>
+            <option value="idoso">Idoso (Mais de 8 anos)</option>
+        </select>
+        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-500">
+            <i class="fa-solid fa-chevron-down text-xs"></i>
+        </div>
+    </div>
+</div>
+
+                <div>
+                    <label class="block text-sm font-semibold mb-1 text-slate-700">Porte</label>
+                    <select id="edit-pet-porte" class="w-full px-3 py-2 border border-slate-200 rounded-xl outline-none focus:border-site-coral">
+                        <option value="pequeno">Pequeno</option>
+                        <option value="médio">Médio</option>
+                        <option value="grande">Grande</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold mb-1 text-slate-700">Localização</label>
+                    <input type="text" id="edit-pet-localizacao" class="w-full px-3 py-2 border border-slate-200 rounded-xl outline-none focus:border-site-coral">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold mb-1 text-slate-700">Sobre / Descrição</label>
+                    <textarea id="edit-pet-sobre" rows="3" class="w-full px-3 py-2 border border-slate-200 rounded-xl outline-none focus:border-site-coral resize-none"></textarea>
+                </div>
+
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                    <label class="block text-sm font-semibold mb-2 text-slate-700 flex items-center gap-1">
+                        <i class="fa-solid fa-heart-circle-check text-site-coral"></i> Status do Pet
+                    </label>
+                    <div class="flex gap-4">
+                        <label class="flex items-center gap-2 cursor-pointer text-sm font-medium">
+                            <input type="radio" name="edit-pet-status" value="não adotado" class="accent-site-green"> 
+                            Não Adotado (Disponível)
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer text-sm font-medium">
+                            <input type="radio" name="edit-pet-status" value="adotado" class="accent-site-coral"> 
+                            Adotado 🎉
+                        </label>
+                    </div>
+                </div>
+
+                <div class="flex gap-3 pt-2">
+                    <button type="button" onclick="fecharModalEditar()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-2.5 rounded-xl transition-all">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="w-full bg-site-coral hover:bg-site-coral-hover text-white font-medium py-2.5 rounded-xl transition-all shadow-sm">
+                        Salvar Alterações
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script src="meus_animais.js"></script>
 
 
@@ -132,10 +204,8 @@
         // LÓGICA DE VALIDAÇÃO DE AUTENTICAÇÃO 
         // ==========================================================
         function checarAutenticacao() {
-            // Coleta a string guardada no login
             const usuarioLogadoString = localStorage.getItem('usuario_logado');
 
-            // Se não existir, o utilizador não está logado
             if (!usuarioLogadoString) {
                 console.warn("Nenhum utilizador logado detetado.");
                 return false;
@@ -148,10 +218,8 @@
                     return false;
                 }
 
-                // Injeta as informações no cabeçalho obtidas do objeto
                 if(headerUserName) headerUserName.textContent = usuario.nome;
                 
-                // Gera as iniciais do avatar de forma segura
                 const partesNome = usuario.nome.trim().split(/\s+/);
                 let initials = partesNome[0].charAt(0);
                 if (partesNome.length > 1) {
@@ -167,14 +235,10 @@
             }
         }
 
-        // Executa a checagem no exato momento em que o DOM carrega
         document.addEventListener('DOMContentLoaded', () => {
             checarAutenticacao();
         });
 
-        // ==========================================================
-        // LÓGICA DO MENU DROPDOWN SUPERIOR
-        // ==========================================================
         if (userMenuBtn && userDropdown) {
             userMenuBtn.addEventListener('click', function(e) {
                 e.stopPropagation();
@@ -194,7 +258,6 @@
 
             if (btnLogout) {
                 btnLogout.addEventListener('click', function() {
-                    // Remove a chave correta utilizada no sistema unificado
                     localStorage.removeItem('usuario_logado');
                     alert("Sessão encerrada!");
                     window.location.href = "login.html";

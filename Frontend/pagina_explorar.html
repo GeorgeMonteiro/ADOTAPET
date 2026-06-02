@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -22,6 +23,10 @@
                             coral: '#f37676',    /* Coral do botão Buscar e Ver Detalhes */
                             'coral-hover': '#e26363',
                             textDark: '#000000'
+                        },
+                        // Adicionado para manter compatibilidade com as classes de Meus Animais
+                        site: {
+                            coral: '#f37676'
                         }
                     },
                     fontFamily: {
@@ -133,6 +138,7 @@
 
         <section class="pb-12">
             <div id="pets-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                
                 </div>
             
             <div id="no-pets-message" class="hidden text-center text-white font-fredoka text-xl py-12">

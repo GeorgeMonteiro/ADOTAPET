@@ -40,7 +40,6 @@ def criar_animal(dados):
 
 # ===== BUSCAR ANIMAIS DO USUÁRIO =====
 def buscar_animais_usuario(email):
-
     conn = conectar_db()
     cursor = conn.cursor()
 
@@ -54,14 +53,52 @@ def buscar_animais_usuario(email):
             genero,
             localizacao,
             sobre,
-            imagem_principal
+            imagem_principal,
+            status -- <-- Incluído aqui
         FROM animais
         WHERE dono_email = %s
         ORDER BY id DESC
     """, (email,))
 
     animais = cursor.fetchall()
+    conn.close()
+    return animais
 
+# ===== EXPLORAR ANIMAIS =====
+def buscar_animais_filtros(especie=None, raca=None, porte=None, localizacao=None):
+    conn = conectar_db()
+    cursor = conn.cursor()
+
+    #  query trazendo apenas os que NÃO estão adotados 
+    query = """
+        SELECT 
+            id, raca, idade, porte, genero, localizacao, sobre, imagem_principal, especie, status
+        FROM animais
+        WHERE (status IS NULL OR status != 'adotado')
+    """
+    valores = []
+
+
+    if especie and especie != "todos":
+        query += " AND LOWER(especie) = LOWER(%s)"
+        valores.append(especie)
+
+    if raca and raca != "todas":
+        query += " AND LOWER(raca) = LOWER(%s)"
+        valores.append(raca)
+
+    if porte and porte != "todos":
+        query += " AND LOWER(porte) = LOWER(%s)"
+        valores.append(porte)
+
+    if localizacao and localizacao != "todas":
+        query += " AND LOWER(localizacao) = LOWER(%s)"
+        valores.append(localizacao)
+
+    query += " ORDER BY id DESC"
+
+    cursor.execute(query, valores)
+    animais = cursor.fetchall()
     conn.close()
 
     return animais
@@ -84,23 +121,36 @@ def deletar_animal(id):
 
 # ===== EDITAR ANIMAL =====
 def atualizar_animal(id, dados):
-
     conn = conectar_db()
     cursor = conn.cursor()
 
-    cursor.execute("""
-        UPDATE animais
-        SET
-            idade = %s,
-            porte = %s,
-            localizacao = %s
-        WHERE id = %s
-    """, (
-        dados["idade"],
-        dados["porte"],
-        dados["localizacao"],
-        id
-    ))
+    try:
+        cursor.execute("""
+            UPDATE animais
+            SET
+                idade = %s,
+                porte = %s,
+                localizacao = %s,
+                sobre = %s,
+                status = %s
+            WHERE id = %s
+        """, (
+            dados.get("idade"),
+            dados.get("porte"),
+            dados.get("localizacao"),
+            dados.get("sobre"),
+            dados.get("status", "não adotado"),
+            id  
+        ))
 
-    conn.commit()
-    conn.close()
+        # Verifica se alguma linha foi de fato modificada no banco
+        linhas_afetadas = cursor.rowcount
+        
+        conn.commit()
+        return linhas_afetadas > 0
+
+    except Exception as e:
+        conn.rollback()
+        raise e
+    finally:
+        conn.close()

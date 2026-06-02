@@ -8,7 +8,7 @@ from uuid import uuid4
 
 from db import criar_tabela
 from usuarios import criar_usuario, buscar_usuario_por_email
-from animais import (criar_animal, buscar_animais_usuario, deletar_animal, atualizar_animal)
+from animais import (criar_animal,buscar_animais_usuario,buscar_animais_filtros,deletar_animal,atualizar_animal)
 
 app = Flask(__name__)
 CORS(app)
@@ -134,20 +134,15 @@ def cadastrar_animal():
         return jsonify({"erro": str(e)}), 500
 
 
-# ===================== MEUS ANIMAIS =====================
 @app.route("/meus-animais", methods=["GET"])
 def meus_animais():
-
     email = request.args.get("email")
-
     if not email:
-        return jsonify({"erro": "Email obrigatório"}), 400
+        return jsonify({"erro": "E-mail obrigatório"}), 400
 
     try:
         animais = buscar_animais_usuario(email)
-
         lista = []
-
         for animal in animais:
             lista.append({
                 "id": animal[0],
@@ -158,15 +153,49 @@ def meus_animais():
                 "gender": animal[5],
                 "location": animal[6],
                 "description": animal[7],
-                "imagem_principal": animal[8]
+                "imagem_principal": animal[8],
+                "status": animal[9] if len(animal) > 9 else "não adotado" # <-- Mapeado aqui
+            })
+
+        return jsonify(lista), 200
+    except Exception as e:
+        return jsonify({"erro": str(e)}), 500
+
+@app.route("/explorar-animais", methods=["GET"])
+def explorar_animais():
+    especie = request.args.get("especie")
+    raca = request.args.get("raca")
+    porte = request.args.get("porte")
+    localizacao = request.args.get("localizacao")
+
+    try:
+        # A função buscar_animais_filtros já trata o "todos"/"todas" perfeitamente!
+        animais = buscar_animais_filtros(
+            especie,
+            raca,
+            porte,
+            localizacao
+        )
+
+        lista = []
+        for animal in animais:
+            lista.append({
+                "id": animal[0],
+                "species": animal[1],
+                "breed": animal[2],      # Mapeia a raça
+                "age": animal[3],        # Mapeia a idade
+                "size": animal[4],       # Mapeia o porte
+                "gender": animal[5],     # Mapeia o gênero
+                "location": animal[6],   # Mapeia a localização
+                "description": animal[7],
+                "imagem_principal": animal[8] # Caminho da imagem (ex: uploads/arquivo.jpg)
             })
 
         return jsonify(lista), 200
 
     except Exception as e:
         return jsonify({"erro": str(e)}), 500
-
-
+    
 # ===================== DELETAR ANIMAL =====================
 @app.route("/animais/<int:id>", methods=["DELETE"])
 def remover_animal(id):

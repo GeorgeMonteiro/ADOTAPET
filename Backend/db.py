@@ -48,7 +48,8 @@ def criar_tabela():
             galeria_fotos TEXT[],  
             video TEXT,
             dono_nome TEXT NOT NULL,
-            dono_email TEXT NOT NULL
+            dono_email TEXT NOT NULL,
+            status TEXT DEFAULT 'não adotado'
         )
     """)
 
