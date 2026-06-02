@@ -236,7 +236,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (typeSelect && breedSelect && petsContainer) {
 
-        const renderPets = (list) => {
+       // Função global/compartilhada para renderizar os cards com as tags abaixo da imagem
+        window.renderizarCardsNaTela = function(list) {
             petsContainer.innerHTML = '';
             
             if (!list || list.length === 0) {
@@ -249,28 +250,53 @@ document.addEventListener("DOMContentLoaded", () => {
 
             list.forEach(pet => {
                 const card = document.createElement('div');
-                // Alterado para refletir o design e elevação de meus_animais
-                card.className = "bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100 flex flex-col";
+                card.className = "bg-white rounded-[28px] overflow-hidden p-4 shadow-sm border border-slate-100 flex flex-col gap-4";
                 
+                // Força o texto para 'disponível' se vier do banco antigo como 'não adotado'
+                let statusPet = pet.status || 'disponível';
+                if (statusPet.toLowerCase() === 'não adotado') {
+                    statusPet = 'disponível';
+                }
+                
+                const statusColor = statusPet.toLowerCase() === 'adotado' ? 'bg-gray-400' : 'bg-[#93b082]';
+
                 card.innerHTML = `
-                    <div class="h-48 bg-slate-200 relative overflow-hidden">
-                        <img src="${pet.image || 'https://via.placeholder.com/400'}" alt="${pet.breed}" class="w-full h-full object-cover" loading="lazy">
-                        <span class="absolute top-2 right-2 bg-site-coral text-white text-xs font-bold px-2 py-1 rounded-xl uppercase font-fredoka">
-                            ${pet.species || 'Pet'}
-                        </span>
+                    <div class="h-56 bg-slate-200 relative rounded-[20px] overflow-hidden">
+                        <img src="${pet.image}" alt="${pet.breed}" class="w-full h-full object-cover" loading="lazy">
                     </div>
 
-                    <div class="p-4 flex flex-col flex-grow justify-between">
-                        <div>
-                            <h4 class="font-fredoka font-bold text-slate-900 text-lg mb-1">${pet.breed}</h4>
-                            <p class="text-sm text-slate-600 line-clamp-2">${pet.description || 'Sem descrição.'}</p>
-                            <span class="text-xs text-slate-400 block mt-2">
-                                <i class="fa-solid fa-location-dot mr-1"></i>${pet.location || 'Não informada'}
+                    <div class="flex flex-col flex-grow justify-between px-1 pb-1">
+                        <div class="space-y-2.5">
+                            
+                            <div class="flex gap-2 items-center">
+                                <span class="${statusColor} text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase font-fredoka tracking-wider shadow-sm">
+                                    ${statusPet}
+                                </span>
+                                
+                                <span class="bg-[#f37676] text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase font-fredoka tracking-wider shadow-sm">
+                                    ${pet.species}
+                                </span>
+                            </div>
+
+                            <h4 class="font-fredoka font-bold text-[#001730] text-xl lowercase first-letter:uppercase pt-1">
+                                ${pet.breed}
+                            </h4>
+                            
+                            <p class="text-sm text-blue-900/60 font-medium line-clamp-2 leading-relaxed">
+                                ${pet.description || 'Sem descrição informada.'}
+                            </p>
+                            
+                            <span class="text-sm text-gray-400 font-medium flex items-center gap-1 mt-2">
+                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"/>
+                                </svg>
+                                ${pet.location || 'Não informada'}
                             </span>
                         </div>
                         
-                        <div class="mt-4 pt-3 border-t border-slate-100">
-                            <button class="w-full bg-adota-coral hover:bg-adota-coral-hover text-white font-fredoka text-sm font-semibold py-2 rounded-xl transition-colors shadow-sm text-center">
+                        <div class="mt-4">
+                            <button class="w-full bg-[#f37676] hover:bg-[#e26363] text-white font-fredoka text-base font-semibold py-2.5 rounded-full transition-all shadow-sm text-center">
                                 Ver detalhes
                             </button>
                         </div>
@@ -321,7 +347,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         updateBreedSelect('todos');
-
         buscarAnimais("todos", "todas", "todos", "todas");
     }
 });
@@ -355,64 +380,19 @@ async function buscarAnimais(especie, raca, porte, localizacao) {
             throw new Error(pets.erro);
         }
 
+        // MAPEAMENTO CORRETO: Sincroniza as chaves do seu Banco com as variáveis do Card
         const petsFormatados = pets.map(pet => ({
             image: pet.imagem_principal ? `http://localhost:5001/${pet.imagem_principal}` : 'https://via.placeholder.com/400',
-            breed: pet.breed || "Sem Raça",
-            gender: pet.gender || "Não informado",
-            age: pet.age || "Idade indefinida",
-            size: pet.size || "Porte indefinido",
-            location: pet.location || "Brasil",
-            species: pet.species || (especie !== 'todos' ? especie : 'Pet'),
-            description: pet.description || ''
+            breed: pet.raca || pet.breed || "Sem Raça Definida",
+            species: pet.especie || pet.species || (especie !== 'todos' ? especie : 'Pet'),
+            description: pet.descricao || pet.description || '',
+            location: pet.localizacao || pet.location || 'Não informada',
+            status: pet.status || 'Disponível'
         }));
 
-        const petsContainer = document.getElementById('pets-container');
-        const noPetsMessage = document.getElementById('no-pets-message');
-
-        if (petsContainer) {
-            petsContainer.innerHTML = '';
-            
-            if (petsFormatados.length === 0) {
-                if (noPetsMessage) noPetsMessage.classList.remove('hidden');
-                return;
-            }
-            if (noPetsMessage) noPetsMessage.classList.add('hidden');
-
-            const fragment = document.createDocumentFragment();
-
-            petsFormatados.forEach(pet => {
-                const card = document.createElement('div');
-                // Mudança aplicada aqui também para manter o visual unificado após a busca por filtros
-                card.className = "bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100 flex flex-col";
-                
-                card.innerHTML = `
-                    <div class="h-48 bg-slate-200 relative overflow-hidden">
-                        <img src="${pet.image}" alt="${pet.breed}" class="w-full h-full object-cover" loading="lazy">
-                        <span class="absolute top-2 right-2 bg-site-coral text-white text-xs font-bold px-2 py-1 rounded-xl uppercase font-fredoka">
-                            ${pet.species}
-                        </span>
-                    </div>
-
-                    <div class="p-4 flex flex-col flex-grow justify-between">
-                        <div>
-                            <h4 class="font-fredoka font-bold text-slate-900 text-lg mb-1">${pet.breed}</h4>
-                            <p class="text-sm text-slate-600 line-clamp-2">${pet.description || 'Sem descrição.'}</p>
-                            <span class="text-xs text-slate-400 block mt-2">
-                                <i class="fa-solid fa-location-dot mr-1"></i>${pet.location || 'Não informada'}
-                            </span>
-                        </div>
-                        
-                        <div class="mt-4 pt-3 border-t border-slate-100">
-                            <button class="w-full bg-adota-coral hover:bg-adota-coral-hover text-white font-fredoka text-sm font-semibold py-2 rounded-xl transition-colors shadow-sm text-center">
-                                Ver detalhes
-                            </button>
-                        </div>
-                    </div>
-                `;
-                fragment.appendChild(card);
-            });
-            
-            petsContainer.appendChild(fragment);
+        // Renderiza na tela chamando a função centralizada e limpa de erros
+        if (typeof window.renderizarCardsNaTela === "function") {
+            window.renderizarCardsNaTela(petsFormatados);
         }
 
     } catch (erro) {

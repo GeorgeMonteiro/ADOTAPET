@@ -4,39 +4,311 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Adotapet - Início</title>
-    <link rel="stylesheet" href="style.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        adota: {
+                            bg: '#93b082',       /* Verde oliva oficial */
+                            card: '#c3d3ba',     /* Verde pastel dos containers/filtros */
+                            coral: '#f37676',    /* Coral oficial */
+                            'coral-hover': '#e26363',
+                            textDark: '#000000'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        fredoka: ['Fredoka', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body>
-    <header class="navbar">
-        <nav>
-            <a href="index.html">início</a>
-            <a href="#">sobre nós</a>
-            <a href="#">animais para adoção</a>
+<body class="bg-adota-bg font-fredoka min-h-screen text-white flex flex-col justify-between select-none">
+
+    <!-- NAVBAR: Estilo limpo e uniforme -->
+    <header class="w-full max-w-7xl mx-auto px-10 pt-10 flex items-center justify-between flex-shrink-0 z-50">
+        <nav class="flex items-center gap-10 text-base font-medium">
+            <a href="index.html" class="text-white tracking-wide hover:opacity-80 transition-all border-b-2 border-white pb-1">
+                início
+            </a>
+            <a href="#" class="text-white/90 hover:text-white transition-all pb-1">
+                sobre nós
+            </a>
+            <a href="#explorar" class="text-white/90 hover:text-white transition-all pb-1">
+                animais para adoção
+            </a>
         </nav>
-        <div>
-            <!-- Links para as páginas que já existem -->
-            <a href="login.html" style="color: white; text-decoration: none; margin-right: 20px; font-weight: bold;">login</a>
-            <a href="cadastro.html" class="btn-header" style="text-decoration: none;">cadastrar-se</a>
+        
+        <div class="flex items-center gap-8 text-base font-medium">
+            <a href="login.html" class="text-white/90 hover:text-white transition-all">
+                login
+            </a>
+            <a href="login.html" class="bg-adota-coral hover:bg-adota-coral-hover text-white px-6 py-3 rounded-xl shadow-md transition-all text-center font-semibold">
+                cadastrar-se
+            </a>
         </div>
     </header>
 
-    <main class="hero-container">
-        <div class="hero-content">
-            <h1>Ajude um animal,<br>Mude uma vida.</h1>
-            <p>Faça a diferença e ajude um bichinho<br>a encontrar um lar.</p>
-            <button class="btn-hero">Quero Adotar</button>
-        </div>
+    <!-- CONTAINER DA APRESENTAÇÃO (HERO) -->
+    <main class="w-full max-w-7xl mx-auto px-10 py-12 grid grid-cols-12 items-center gap-10">
         
-        <div class="hero-image">
-            <!-- Referência à imagem na pasta animais -->
-            <img src="imgs/img-intro.png" alt="Gatinho e Cachorro">
+        <div class="col-span-7 flex flex-col items-start justify-center text-left space-y-6">
+            <h1 class="font-bold text-white text-4xl md:text-5xl xl:text-6xl leading-[1.15] tracking-tight">
+                Ajude um animal,<br>Mude uma vida.
+            </h1>
+            
+            <p class="font-medium text-white/90 text-lg md:text-xl leading-relaxed max-w-md">
+                Faça a diferença e ajude um bichinho<br>a encontrar um lar.
+            </p>
+            
+            <div class="pt-2">
+                <a href="#explorar" class="inline-block bg-adota-coral hover:bg-adota-coral-hover text-white text-lg font-semibold px-10 py-3.5 rounded-[22px] shadow-md transition-all tracking-wide text-center transform hover:scale-102 duration-200">
+                    Quero Adotar
+                </a>
+            </div>
         </div>
+
+        <div class="col-span-5 flex justify-end items-center w-full">
+            <img src="imgs/img-intro.png" alt="Gatinho e Cachorro do AdotaPet" class="w-full max-w-[500px] xl:max-w-[580px] h-auto object-contain drop-shadow-xl">
+        </div>
+
     </main>
 
-    <footer class="home-footer">
+    <!-- SEÇÃO DE EXPLORAR: Filtros e Grid de Animais (Igual à lógica da outra tela) -->
+    <section id="explorar" class="w-full max-w-7xl mx-auto px-10 py-12 space-y-8 scroll-mt-6">
+        
+        <!-- Bloco de Filtros -->
+        <div class="bg-adota-card rounded-[24px] p-6 sm:p-8 shadow-sm text-adota-textDark">
+            <form id="filter-form" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 items-end gap-4">
+                
+                <div class="flex flex-col gap-2">
+                    <label class="font-fredoka text-xl font-semibold px-1 text-white">Animal</label>
+                    <select id="filter-type" class="w-full bg-white px-4 py-2.5 rounded-lg text-base font-medium outline-none border border-transparent focus:border-adota-coral transition-all cursor-pointer">
+                        <option value="todos">Todos</option>
+                        <option value="cao">Cachorro</option> <option value="gato">Gato</option>
+                    </select>
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <label class="font-fredoka text-xl font-semibold px-1 text-white">Raça</label>
+                    <select id="filter-breed" class="w-full bg-white px-4 py-2.5 rounded-lg text-base font-medium outline-none border border-transparent focus:border-adota-coral transition-all cursor-pointer">
+                        <option value="todas">Todas as raças</option>
+                    </select>
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <label class="font-fredoka text-xl font-semibold px-1 text-white">Tamanho</label>
+                    <select id="filter-size" class="w-full bg-white px-4 py-2.5 rounded-lg text-base font-medium outline-none border border-transparent focus:border-adota-coral transition-all cursor-pointer">
+                        <option value="todos">Todos os tamanhos</option>
+                        <option value="pequeno">pequeno</option>
+                        <option value="médio">médio</option>
+                        <option value="grande">grande</option>
+                    </select>
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <label class="font-fredoka text-xl font-semibold px-1 text-white">Localização</label>
+                    <select id="filter-location" class="w-full bg-white px-4 py-2.5 rounded-lg text-base font-medium outline-none border border-transparent focus:border-adota-coral transition-all cursor-pointer">
+                        <option value="todas">Todas as cidades</option>
+                        <option value="Paulista, PE">Paulista, PE</option>
+                        <option value="Recife, PE">Recife, PE</option>
+                    </select>
+                </div>
+
+                <div class="flex justify-end lg:col-span-1 sm:col-span-2 lg:w-full">
+                    <button type="submit" class="w-full bg-adota-coral hover:bg-adota-coral-hover text-white font-fredoka text-xl font-semibold py-2.5 rounded-full shadow-sm transition-all tracking-wide">
+                        Buscar
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Grid de Exibição dos Pets -->
+        <div class="pb-12">
+            <div id="pets-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 font-sans text-adota-textDark">
+                <!-- Os cards de animais vão aparecer aqui via JavaScript -->
+            </div>
+            
+            <div id="no-pets-message" class="hidden text-center text-white font-fredoka text-xl py-12">
+                Nenhum animalzinho encontrado com esses filtros. 🐾
+            </div>
+        </div>
+
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="w-full max-w-7xl mx-auto px-10 pb-10 flex justify-between items-center text-white/80 text-base font-medium flex-shrink-0">
         <span>Encontre seu pet</span>
+        <span class="text-white/30 text-lg">•</span>
         <span>Cadastre pets</span>
+        <span class="text-white/30 text-lg">•</span>
         <span>Converse com tutores</span>
     </footer>
+
+    <!-- LÓGICA SCRIPT: Conexão com o Banco de Dados (API Flask) e Alerta de Login -->
+    <script>
+        const API_URL = "http://localhost:5001";
+        const container = document.getElementById('pets-container');
+        const noPetsMessage = document.getElementById('no-pets-message');
+        const filterForm = document.getElementById('filter-form');
+        const filterType = document.getElementById('filter-type');
+        const filterBreed = document.getElementById('filter-breed');
+
+        // Objeto de raças idêntico ao extraído do Perfil_Dashboard.html
+        const racasPorEspecie = {
+            cao: [
+                "Akita", "American Bully", "Beagle", "Border Collie", "Boston Terrier", 
+                "Boxer", "Bulldog Francês", "Bulldog Inglês", "Chihuahua", "Chow Chow", 
+                "Cocker Spaniel", "Dachshund (Salsicha)", "Doberman", "Dogue Alemão", 
+                "Fila Brasileiro", "Golden Retriever", "Husky Siberiano", "Labrador Retriever", 
+                "Lhasa Apso", "Maltês", "Mastiff", "Pastor Alemão", "Pastor Australiano", 
+                "Pastor Belga Malinois", "Pekingese", "Pinscher", "Pit Bull", "Poodle", 
+                "Pug", "Rottweiler", "Samoieda", "Schnauzer", "Shar Pei", "Shiba Inu", 
+                "Shih Tzu", "Spitz Alemão", "Staffordshire Bull Terrier", "Weimaraner", 
+                "Yorkshire Terrier", "Sem raça definida (SRD)"
+            ],
+            gato: [
+                "Abissínio", "American Shorthair", "Angorá Turco", "Ashera", "Bengal (Gato de Bengala)", 
+                "Bombaim", "British Shorthair (Inglês)", "Burmesh", "Chartreux", "Cornish Rex", 
+                "Devon Rex", "Egyptian Mau", "Exótico", "Himalaio", "Maine Coon", 
+                "Manx", "Munchkin", "Norueguês da Floresta", "Oriental", "Persa", 
+                "Ragdoll", "Russian Blue (Azul Russo)", "Sagrado da Birmânia", "Savannah", 
+                "Scottish Fold", "Siamês", "Sphynx (Gato pelado)", "Tonquinês", "Toyger", "Vira-lata (SRD)"
+            ]
+        };
+
+        // Função de atualização baseada estritamente na lógica do Perfil_Dashboard.html
+        function atualizarOpcoesRaca() {
+            const especieSelecionada = filterType.value; // Pega 'cao', 'gato' ou 'todos'
+            
+            // Reseta o select mantendo a opção inicial padrão
+            filterBreed.innerHTML = '<option value="todas">Todas as raças</option>';
+            
+            // Se houver uma espécie selecionada válida no mapeamento, adiciona as raças
+            if (especieSelecionada && racasPorEspecie[especieSelecionada]) {
+                racasPorEspecie[especieSelecionada].forEach(raca => {
+                    const option = document.createElement('option');
+                    option.value = raca;
+                    option.textContent = raca;
+                    filterBreed.appendChild(option);
+                });
+            }
+        }
+
+        // Escuta a mudança no select de Tipo do Animal para disparar a função
+        filterType.addEventListener('change', atualizarOpcoesRaca);
+
+        // Bloqueio do visitante com aviso e encaminhamento ao formulário de login
+        function acaoVerDetalhes() {
+            alert("Para ver os detalhes deste lindo animalzinho e iniciar uma adoção, você precisa fazer o login primeiro! 🐾");
+            window.location.href = "login.html";
+        }
+
+        // Faz requisição real mapeando os filtros para a rota do seu backend python
+        async function carregarAnimais(filtros = {}) {
+            try {
+                const urlParams = new URLSearchParams();
+                
+                // Mapeia os valores para o padrão que a rota /explorar-animais do app.py espera
+                if (filtros.especie && filtros.especie !== 'todos') {
+                    // Se o valor vindo do formulário for 'cao', transforma em 'cachorro' para o banco PostgreSQL entender
+                    const valorEspecie = filtros.especie === 'cao' ? 'cachorro' : filtros.especie;
+                    urlParams.append('especie', valorEspecie);
+                }
+                if (filtros.raca && filtros.raca !== 'todas') urlParams.append('raca', filtros.raca);
+                if (filtros.porte && filtros.porte !== 'todos') urlParams.append('porte', filtros.porte);
+                if (filtros.localizacao && filtros.localizacao !== 'todas') urlParams.append('localizacao', filtros.localizacao);
+
+                const resposta = await fetch(`${API_URL}/explorar-animais?${urlParams.toString()}`);
+                if (!resposta.ok) throw new Error("Erro de resposta do servidor");
+                
+                const animais = await resposta.json();
+                renderPets(animais);
+            } catch (error) {
+                console.error("Erro ao conectar à API:", error);
+                container.innerHTML = `<div class="col-span-full text-center text-white/70 py-12 font-fredoka text-lg">Erro ao carregar os animais. Verifique se o seu servidor Flask está ligado.</div>`;
+            }
+        }
+
+        // Renderiza os cards baseado rigorosamente no print aaaa.png enviado por você
+        function renderPets(data) {
+            container.innerHTML = '';
+            
+            if (!data || data.length === 0) {
+                noPetsMessage.classList.remove('hidden');
+                return;
+            }
+            
+            noPetsMessage.classList.add('hidden');
+
+            data.forEach(pet => {
+                const imagemUrl = pet.imagem_principal && !pet.imagem_principal.startsWith('http') 
+                    ? `${API_URL}/${pet.imagem_principal}` 
+                    : (pet.imagem_principal || 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&q=80&w=400');
+
+                const statusTexto = (pet.status || 'disponível').toUpperCase();
+                const especieTexto = (pet.species || pet.especie || 'PET').toUpperCase();
+                const racaTexto = pet.breed || pet.raca || 'Sem Raça Definida';
+                const descricaoTexto = pet.description || pet.descricao || 'sem descrição disponível...';
+                const localizacaoTexto = pet.location || pet.localizacao || 'Não informada';
+
+                const card = document.createElement('div');
+                card.className = "bg-white rounded-[32px] p-4 shadow-sm hover:shadow-md transition-shadow flex flex-col border border-white text-black";
+                
+                card.innerHTML = `
+                    <div class="h-56 bg-[#f5f5f5] rounded-[24px] overflow-hidden relative mb-4 flex items-center justify-center">
+                        <img src="${imagemUrl}" alt="${racaTexto}" class="w-full h-full object-cover">
+                    </div>
+                    
+                    <div class="flex flex-col flex-grow px-2">
+                        <div class="flex items-center gap-2 mb-4 font-fredoka text-[11px] font-bold tracking-wider">
+                            <span class="bg-[#93b082] text-white px-3 py-1 rounded-full">${statusTexto}</span>
+                            <span class="bg-[#f37676] text-white px-3 py-1 rounded-full">${especieTexto}</span>
+                        </div>
+
+                        <h3 class="font-fredoka text-2xl font-bold text-[#0d233a] mb-1 capitalize">${racaTexto}</h3>
+                        <p class="text-base text-[#7c8ba1] font-medium mb-3 lowercase line-clamp-1">${descricaoTexto}</p>
+                        
+                        <div class="flex items-center gap-1 text-[#93a0b5] text-sm mb-5 font-medium">
+                            <i class="fa-solid fa-location-dot"></i>
+                            <span class="capitalize">${localizacaoTexto}</span>
+                        </div>
+                        
+                        <button onclick="acaoVerDetalhes()" class="w-full mt-auto bg-[#f37676] hover:bg-[#e26363] text-white font-fredoka text-lg font-semibold py-3.5 rounded-full transition-colors text-center shadow-sm">
+                            Ver detalhes
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Evento de envio do formulário de filtros
+        filterForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const filtros = {
+                especie: document.getElementById('filter-type').value,
+                raca: document.getElementById('filter-breed').value,
+                porte: document.getElementById('filter-size').value,
+                localizacao: document.getElementById('filter-location').value
+            };
+            carregarAnimais(filtros);
+        });
+
+        // Inicialização automática das funções ao carregar a página
+        atualizarOpcoesRaca();
+        carregarAnimais();
+    </script>
 </body>
 </html>

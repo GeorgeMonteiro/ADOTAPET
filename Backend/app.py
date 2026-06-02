@@ -169,7 +169,6 @@ def explorar_animais():
     localizacao = request.args.get("localizacao")
 
     try:
-        # A função buscar_animais_filtros já trata o "todos"/"todas" perfeitamente!
         animais = buscar_animais_filtros(
             especie,
             raca,
@@ -179,16 +178,22 @@ def explorar_animais():
 
         lista = []
         for animal in animais:
+            # Pega o status do banco. Se for 'não adotado' ou nulo, transforma em 'disponível'
+            status_banco = animal[9] if len(animal) > 9 else "disponível"
+            if not status_banco or status_banco.lower() == "não adotado":
+                status_banco = "disponível"
+
             lista.append({
                 "id": animal[0],
-                "species": animal[1],
-                "breed": animal[2],      # Mapeia a raça
-                "age": animal[3],        # Mapeia a idade
-                "size": animal[4],       # Mapeia o porte
-                "gender": animal[5],     # Mapeia o gênero
-                "location": animal[6],   # Mapeia a localização
-                "description": animal[7],
-                "imagem_principal": animal[8] # Caminho da imagem (ex: uploads/arquivo.jpg)
+                "breed": animal[1],            
+                "age": animal[2],              
+                "size": animal[3],             
+                "gender": animal[4],           
+                "location": animal[5],         
+                "description": animal[6],      
+                "imagem_principal": animal[7], 
+                "species": animal[8],          
+                "status": status_banco
             })
 
         return jsonify(lista), 200
