@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AdotaPet - Meu Perfil & Cadastro</title>
+    <title>AdotaPet - Cadastrar Pet</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -54,6 +54,7 @@
 </head>
 <body class="bg-site-green font-sans min-h-screen text-slate-800 flex flex-col">
 
+    <!-- HEADER / NAVBAR -->
     <header class="bg-site-green border-b border-site-lightgreen/30 sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between relative">
             <div class="flex items-center gap-6">
@@ -78,7 +79,7 @@
                 </button>
 
                 <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-site-lightgreen/30 overflow-hidden font-fredoka py-1 z-50 text-sm">
-                    <a href="Perfil_Dashboard.html" class="flex items-center gap-2 px-4 py-2.5 text-gray-700 bg-slate-50 font-semibold hover:bg-site-lightgreen/10 transition-colors">
+                    <a href="perfil_usuario.html" class="flex items-center gap-2 px-4 py-2.5 text-gray-700 hover:bg-site-lightgreen/10 transition-colors">
                         <i class="fa-solid fa-user opacity-70"></i> Meu Perfil
                     </a>
                     <a href="meus_animais.html" class="flex items-center gap-2 px-4 py-2.5 text-gray-700 hover:bg-site-lightgreen/20 transition-colors">
@@ -93,54 +94,35 @@
         </div>
     </header>
 
+    <!-- CONTEÚDO PRINCIPAL (DASHBOARD DE CADASTRO) -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow grid grid-cols-1 lg:grid-cols-3 gap-8">
         
+        <!-- Sidebar Resumida (Esquerda) -->
         <aside class="lg:col-span-1 space-y-6">
             <div class="bg-site-lightgreen rounded-3xl p-6 text-center shadow-sm text-slate-900">
                 
-                <div class="relative w-32 h-32 mx-auto mb-4 rounded-full border-4 border-white bg-slate-200 flex items-center justify-center overflow-hidden group cursor-pointer shadow-sm">
+                <div class="relative w-32 h-32 mx-auto mb-4 rounded-full border-4 border-white bg-slate-200 flex items-center justify-center overflow-hidden shadow-sm">
                     <div id="avatar-container" class="w-full h-full flex items-center justify-center text-slate-400">
-                        <i id="user-avatar-placeholder" class="fa-solid fa-user text-5xl smooth-transition group-hover:scale-110"></i>
-                        <img id="user-avatar" src="" alt="Foto de perfil" class="hidden w-full h-full object-cover smooth-transition group-hover:scale-110">
+                        <i id="user-avatar-placeholder" class="fa-solid fa-user text-5xl"></i>
+                        <img id="user-avatar" src="" alt="Foto de perfil" class="hidden w-full h-full object-cover">
                     </div>
-                    
-                    <label for="avatar-input" class="absolute inset-0 flex flex-col items-center justify-center bg-black/50 text-white text-xs font-semibold opacity-0 group-hover:opacity-100 smooth-transition cursor-pointer">
-                        <i class="fa-solid fa-camera mb-1"></i>
-                        <span>Alterar Foto</span>
-                    </label>
-                    <input type="file" id="avatar-input" accept="image/*" class="hidden">
                 </div>
                 
                 <h2 id="display-user-name" class="font-fredoka text-xl font-bold">Carregando...</h2>
                 <p id="display-user-email" class="text-slate-700 text-sm mb-4">...</p>
                 
-                <div class="bg-white/40 p-3 rounded-2xl flex flex-col justify-center items-center">
+                <div class="bg-white/40 p-3 rounded-2xl flex flex-col justify-center items-center mb-4">
                     <h4 id="pets-count" class="font-fredoka text-2xl font-bold text-slate-800">0</h4>
                     <p class="text-slate-700 text-xs font-bold uppercase tracking-wide">Pets Divulgados</p>
                 </div>
-            </div>
 
-            <div class="bg-site-lightgreen rounded-3xl p-6 shadow-sm">
-                <h3 class="font-fredoka text-lg font-bold mb-4 border-b border-white/20 pb-2 text-slate-900">
-                    <i class="fa-solid fa-user-gear mr-1"></i> Meus Dados Básicos
-                </h3>
-                <form id="user-profile-form" class="space-y-3">
-                    <div>
-                        <input type="text" id="user-name-input" value="" placeholder="Nome Completo" required class="w-full px-4 py-2.5 rounded-xl bg-white text-slate-800 outline-none focus:ring-2 focus:ring-site-coral/50 smooth-transition text-sm">
-                    </div>
-                    <div>
-                        <input type="email" id="user-email-input" value="" placeholder="E-mail" required class="w-full px-4 py-2.5 rounded-xl bg-white text-slate-800 outline-none focus:ring-2 focus:ring-site-coral/50 smooth-transition text-sm" disabled>
-                    </div>
-                    <div>
-                        <input type="text" id="user-phone-input" value="" placeholder="WhatsApp" class="w-full px-4 py-2.5 rounded-xl bg-white text-slate-800 outline-none focus:ring-2 focus:ring-site-coral/50 smooth-transition text-sm">
-                    </div>
-                    <button type="submit" class="w-full bg-site-coral hover:bg-site-coral-hover text-white font-fredoka font-medium py-2.5 rounded-2xl smooth-transition shadow-sm">
-                        Salvar Dados
-                    </button>
-                </form>
+                <a href="perfil_usuario.html" class="block w-full bg-slate-800 hover:bg-slate-700 text-white font-fredoka font-medium py-3 rounded-2xl smooth-transition shadow-sm">
+                    <i class="fa-solid fa-user-gear mr-1"></i> Editar Meu Perfil
+                </a>
             </div>
         </aside>
 
+        <!-- Formulário de Divulgação de Pet (Direita) -->
         <section class="lg:col-span-2">
             <div class="bg-site-lightgreen rounded-3xl p-6 sm:p-8 shadow-sm">
                 <div class="border-b border-white/20 pb-4 mb-6">
@@ -283,6 +265,7 @@
         </section>
     </main>
 
+    <!-- TOASTS & MODAIS CUSTOMIZADOS -->
     <div id="success-toast" class="fixed bottom-6 right-[-450px] bg-slate-800 text-white px-5 py-3 rounded-2xl shadow-xl flex items-center gap-3 font-semibold smooth-transition z-50 max-w-sm">
         <i class="fa-solid fa-circle-check text-site-lightgreen text-xl"></i>
         <div class="flex flex-col">
@@ -291,6 +274,21 @@
         </div>
     </div>
 
+    <!-- Modal de Alerta Customizado -->
+    <div id="alert-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4 font-fredoka">
+        <div class="bg-white rounded-3xl p-6 max-w-sm w-full text-center shadow-2xl transition-all duration-300" id="alert-modal-content">
+            <div id="alert-modal-icon-container" class="w-16 h-16 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">
+                <i id="alert-modal-icon" class="fa-solid fa-circle-exclamation"></i>
+            </div>
+            <h3 id="alert-modal-title" class="text-xl font-bold text-slate-900 mb-2">Aviso</h3>
+            <p id="alert-modal-desc" class="text-slate-600 font-sans text-sm mb-6">...</p>
+            <button type="button" id="alert-modal-btn" class="w-full bg-site-coral hover:bg-site-coral-hover text-white font-semibold py-2.5 rounded-xl transition-colors">
+                Entendido
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal de Sucesso -->
     <div id="success-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 font-fredoka">
         <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-sm w-full text-center shadow-2xl scale-95 opacity-0 transition-all duration-300 transform" id="modal-content">
             <div class="w-20 h-20 bg-site-lightgreen/30 text-site-green rounded-full flex items-center justify-center mx-auto mb-4 text-4xl">
@@ -314,10 +312,10 @@
     <script>
         const breedsData = {
             gato: ["Siamês", "Persa", "Maine Coon", "Angorá", "Bengal", "Sem Raça Definida (SRD)"],
-            cachorro: ["Pomerânia (Spitz Alemão Anão)", "Rottweiler", "Golden Retriever", "Bulldog Francês", "Border Collie", "Shih Tzu", "Sem raça definida (SRD)"]
+            cachorro: ["Pomerânia (Spitz Alemão Anão)", "Rottweiler", "Golden Retriever", "Bulldog Francês", "Border Collie", "Shih Tzu", "Chihuahua pelo longo", "Pastor Belga Malinois", "Spitz Alemão pequeno", "Yorkshire Terrier", "Sem raça definida (SRD)"]
         };
 
-        // Elementos do Cabeçalho e Sessão
+        // Elementos de Navegação
         const userMenuBtn = document.getElementById('user-menu-btn');
         const userDropdown = document.getElementById('user-dropdown');
         const userMenuArrow = document.getElementById('user-menu-arrow');
@@ -325,18 +323,14 @@
         const headerUserName = document.getElementById('header-user-name');
         const headerAvatarInitials = document.getElementById('header-avatar-initials');
 
-        // Elementos do Perfil Lateral
+        // Elementos Lateral Esquerda
         const displayUserName = document.getElementById('display-user-name');
         const displayUserEmail = document.getElementById('display-user-email');
-        const userNameInput = document.getElementById('user-name-input');
-        const userEmailInput = document.getElementById('user-email-input');
-        const userPhoneInput = document.getElementById('user-phone-input');
-        const userForm = document.getElementById('user-profile-form');
-        const avatarInput = document.getElementById('avatar-input');
         const avatarImage = document.getElementById('user-avatar');
         const avatarPlaceholder = document.getElementById('user-avatar-placeholder');
+        const petsCountDisplay = document.getElementById('pets-count');
 
-        // Elementos do Cadastro de Animais
+        // Elementos Formulário de Cadastro
         const speciesButtons = document.querySelectorAll('.species-btn');
         const breedSelect = document.getElementById('pet-breed');
         const photosInput = document.getElementById('photos-input');
@@ -346,9 +340,8 @@
         const videoPreviewPlayer = document.getElementById('video-preview-player');
         const removeVideoBtn = document.getElementById('remove-video-btn');
         const petForm = document.getElementById('pet-registration-form');
-        const petsCountDisplay = document.getElementById('pets-count');
 
-        // Modais, Toasts e Estado
+        // Feedbacks Toasts e Modais
         const successToast = document.getElementById('success-toast');
         const toastTitle = document.getElementById('toast-title');
         const toastDesc = document.getElementById('toast-desc');
@@ -359,15 +352,39 @@
         let uploadedPhotos = [];
         let totalRegisteredPets = 0;
 
-        // ==========================================================
-        // LÓGICA DE INICIALIZAÇÃO DE DADOS DO USUÁRIO LOGADO 
-        // ==========================================================
-        function carregarDadosUsuario() {
+        // Custom Modal Alert
+        function triggerAlertModal(title, desc, isSuccess = false) {
+            const modal = document.getElementById('alert-modal');
+            const iconContainer = document.getElementById('alert-modal-icon-container');
+            const icon = document.getElementById('alert-modal-icon');
+            const mTitle = document.getElementById('alert-modal-title');
+            const mDesc = document.getElementById('alert-modal-desc');
+            const btn = document.getElementById('alert-modal-btn');
+
+            mTitle.textContent = title;
+            mDesc.textContent = desc;
+
+            if (isSuccess) {
+                iconContainer.className = "w-16 h-16 bg-emerald-100 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl";
+                icon.className = "fa-solid fa-circle-check";
+                btn.className = "w-full bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-2.5 rounded-xl transition-colors";
+            } else {
+                iconContainer.className = "w-16 h-16 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl";
+                icon.className = "fa-solid fa-circle-exclamation";
+                btn.className = "w-full bg-site-coral hover:bg-site-coral-hover text-white font-semibold py-2.5 rounded-xl transition-colors";
+            }
+
+            modal.classList.remove('hidden');
+            btn.onclick = () => { modal.classList.add('hidden'); };
+        }
+
+        // Recupera dados do localStorage e atualiza componentes
+        async function carregarDadosUsuario() {
             const raw = localStorage.getItem('usuario_logado');
 
             if (!raw) {
-                alert("Você precisa fazer login para acessar esta página.");
-                window.location.href = "login.html";
+                triggerAlertModal("Acesso Negado", "Faça login para cadastrar animais. Redirecionando...", false);
+                setTimeout(() => { window.location.href = "login.html"; }, 1800);
                 return;
             }
 
@@ -380,53 +397,57 @@
                 return;
             }
 
-            // Normalização definitiva idêntica ao meus_animais.html
             if (usuario.usuario) {
                 usuario = usuario.usuario;
             }
 
-            const nome = usuario.nome?.trim() || 'Usuário Anônimo';
+            const nome = usuario.nome?.trim() || 'Usuário do AdotaPet';
             const email = usuario.email || '';
 
-            // 1. Injeta o nome real no Cabeçalho (Header)
             if (headerUserName) headerUserName.textContent = nome;
-
-            // 2. Injeta o nome real e e-mail no Card Lateral Esquerdo
             if (displayUserName) displayUserName.textContent = nome;
             if (displayUserEmail) displayUserEmail.textContent = email;
 
-            // 3. Preenche os campos do formulário com os dados reais
-            if (userNameInput) userNameInput.value = nome;
-            if (userEmailInput) userEmailInput.value = email;
-            if (userPhoneInput) userPhoneInput.value = usuario.telefone || '';
+            // Foto de perfil persistente do localStorage
+            if (usuario.foto) {
+                avatarImage.src = usuario.foto;
+                avatarImage.classList.remove('hidden');
+                avatarPlaceholder.classList.add('hidden');
+            }
 
-            // 4. Injeta as iniciais reais no Avatar do Header
+            // Iniciais para avatar
             const partes = nome.split(/\s+/);
             let initials = partes[0][0];
             if (partes.length > 1) initials += partes[partes.length - 1][0];
-
             if (headerAvatarInitials) {
                 headerAvatarInitials.textContent = initials.toUpperCase();
             }
+
+            // Contagem dinâmica de animais vinculados ao email do usuário no Backend
+            try {
+                const response = await fetch(`http://localhost:5001/explorar-animais`);
+                if (response.ok) {
+                    const animais = await response.json();
+                    const meusAnimais = animais.filter(pet => (pet.dono_email || pet.owner_email) === email);
+                    totalRegisteredPets = meusAnimais.length;
+                    if (petsCountDisplay) petsCountDisplay.textContent = totalRegisteredPets;
+                }
+            } catch (error) {
+                console.error("Erro ao puxar contagem de animais:", error);
+            }
         }
 
-        // AGORA SIM EXECUTA ASSIM QUE O DOM FOR CARREGADO
         document.addEventListener('DOMContentLoaded', () => {
             carregarDadosUsuario();
-            populateBreeds('cachorro'); // Popula raças padrão ao carregar
+            populateBreeds('cachorro'); 
         });
 
-        // ==========================================================
-        // LÓGICA DO MENU DROPDOWN SUPERIOR
-        // ==========================================================
+        // Dropdown Header
         if (userMenuBtn && userDropdown) {
             userMenuBtn.addEventListener('click', function(e) {
                 e.stopPropagation();
                 userDropdown.classList.toggle('hidden');
-                
-                if (userMenuArrow) {
-                    userMenuArrow.classList.toggle('rotate-180');
-                }
+                if (userMenuArrow) userMenuArrow.classList.toggle('rotate-180');
             });
 
             document.addEventListener('click', function(e) {
@@ -439,29 +460,13 @@
             if (btnLogout) {
                 btnLogout.addEventListener('click', function() {
                     localStorage.removeItem('usuario_logado');
-                    alert("Sessão encerrada!");
-                    window.location.href = "login.html";
+                    triggerAlertModal("Sessão Encerrada", "Até breve!", true);
+                    setTimeout(() => { window.location.href = "login.html"; }, 1500);
                 });
             }
         }
 
-        // ==========================================================
-        // LÓGICA DE ATUALIZAÇÃO DA FOTO
-        // ==========================================================
-        avatarInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    avatarImage.src = event.target.result;
-                    avatarImage.classList.remove('hidden');
-                    avatarPlaceholder.classList.add('hidden');
-                    triggerToast('Foto Atualizada!', 'Sua imagem de perfil foi alterada.');
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-
+        // Espécie e Raças
         speciesButtons.forEach(btn => {
             btn.addEventListener('click', function() {
                 speciesButtons.forEach(b => {
@@ -478,12 +483,13 @@
             breedSelect.innerHTML = '<option value="" disabled selected>Selecione a raça...</option>';
             breedsData[species].forEach(breed => {
                 const option = document.createElement('option');
-                option.value = breed.toLowerCase().replace(/\s+/g, '-');
+                option.value = breed;
                 option.textContent = breed;
                 breedSelect.appendChild(option);
             });
         }
 
+        // Upload de Mídias
         photosInput.addEventListener('change', function(e) {
             Array.from(e.target.files).forEach(file => {
                 if (uploadedPhotos.some(p => p.name === file.name)) return;
@@ -530,9 +536,18 @@
             videoPreviewContainer.classList.add('hidden');
         });
 
-        // ============================================
-        // SUBMIT DO PET E EXIBIÇÃO DO BOX DE ADOÇÃO 
-        // ============================================
+        function triggerToast(title, description) {
+            toastTitle.textContent = title;
+            toastDesc.textContent = description;
+            successToast.classList.remove('right-[-450px]');
+            successToast.classList.add('right-6');
+            setTimeout(() => {
+                successToast.classList.remove('right-6');
+                successToast.classList.add('right-[-450px]');
+            }, 3000);
+        }
+
+        // Submissão do Formulário de Pet integrado com a API Flask PostgreSQL
         petForm.addEventListener('submit', async function(e) {
             e.preventDefault();
 
@@ -545,14 +560,15 @@
                 .getAttribute('data-species');
 
             const dadosPet = {
+                nome: document.getElementById("pet-name").value,
                 especie: especieSelecionada,
                 raca: document.getElementById("pet-breed").value,
                 idade: document.getElementById("pet-age").value,
                 porte: document.getElementById("pet-size").value,
                 genero: document.getElementById("pet-gender").value,
-                localizacao: "Recife - PE",
+                cuidados: document.getElementById("pet-health").value,
                 sobre: document.getElementById("pet-desc").value,
-                imagem_principal: uploadedPhotos.length > 0 ? uploadedPhotos[0].src : "",
+                imagem_principal: uploadedPhotos.length > 0 ? uploadedPhotos[0].src : "https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&q=80&w=400",
                 dono_nome: usuario.nome,
                 dono_email: usuario.email
             };
@@ -564,43 +580,40 @@
                     body: JSON.stringify(dadosPet)
                 });
 
-                const dados = await resposta.json();
-
                 if (resposta.ok) {
-                    alert("Pet cadastrado com sucesso!");
+                    totalRegisteredPets++;
+                    if (petsCountDisplay) petsCountDisplay.textContent = totalRegisteredPets;
+
+                    // Limpa Formulários
                     petForm.reset();
                     uploadedPhotos = [];
                     renderPhotosGrid();
+                    if (videoPreviewContainer) {
+                        videoPreviewContainer.classList.add('hidden');
+                        videoPreviewPlayer.src = '';
+                    }
+
+                    // Abre modal de sucesso
+                    successModal.classList.remove('hidden');
+                    setTimeout(() => {
+                        modalContent.classList.remove('scale-95', 'opacity-0');
+                        modalContent.classList.add('scale-100', 'opacity-100');
+                    }, 50);
                 } else {
-                    alert(dados.erro);
+                    const errData = await resposta.json();
+                    triggerAlertModal("Ops!", errData.message || "Não foi possível cadastrar o pet.", false);
                 }
-            } catch (erro) {
-                console.error(erro);
-                alert("Erro ao conectar com o servidor.");
+            } catch (error) {
+                console.error("Erro na requisição:", error);
+                triggerAlertModal("Erro de Conexão", "Certifique-se de que o backend Flask está ligado na porta 5001.", false);
             }
         });
 
-        // Fechar Modal ao clicar no botão "Cadastrar Outro Pet"
-        if (closeModalBtn) {
-            closeModalBtn.addEventListener('click', () => {
-                modalContent.classList.remove('scale-100', 'opacity-100');
-                modalContent.classList.add('scale-95', 'opacity-0');
-                setTimeout(() => {
-                    successModal.classList.add('hidden');
-                }, 300);
-            });
-        }
-
-        function triggerToast(title, description) {
-            toastTitle.textContent = title;
-            toastDesc.textContent = description;
-            successToast.classList.remove('right-[-450px]');
-            successToast.classList.add('right-6');
-            setTimeout(() => {
-                successToast.classList.remove('right-6');
-                successToast.classList.add('right-[-450px]');
-            }, 3000);
-        }
+        closeModalBtn.addEventListener('click', () => {
+            modalContent.classList.add('scale-95', 'opacity-0');
+            modalContent.classList.remove('scale-100', 'opacity-100');
+            setTimeout(() => { successModal.classList.add('hidden'); }, 300);
+        });
     </script>
 </body>
 </html>

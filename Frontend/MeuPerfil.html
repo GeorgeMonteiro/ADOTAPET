@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AdotaPet - Meu Perfil</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        site: {
+                            green: '#93b082',       /* Verde oliva oficial */
+                            lightgreen: '#c3d3ba',  /* Verde pastel dos containers */
+                            coral: '#f37676',       /* Coral/Salmão dos botões de ação */
+                            'coral-hover': '#e26363',
+                            dark: '#2d3748'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        fredoka: ['Fredoka', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        .smooth-transition {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #93b082;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c3d3ba;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="bg-site-green font-sans min-h-screen text-slate-800 flex flex-col">
+
+    <!-- NAVBAR COERENTE -->
+    <header class="bg-site-green border-b border-site-lightgreen/30 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between relative">
+            <div class="flex items-center gap-6">
+                <a href="pagina_explorar.html" class="font-fredoka text-xl font-medium text-white/80 hover:text-white pb-1 smooth-transition">
+                    Explorar pets
+                </a>
+                <a href="meus_animais.html" class="font-fredoka text-xl font-medium text-white/80 hover:text-white pb-1 smooth-transition">
+                    Meus pets
+                </a>
+                <a href="#" class="font-fredoka text-xl font-medium text-white/80 hover:text-white pb-1 smooth-transition">
+                    Mensagens
+                </a>
+            </div>
+            
+            <div class="relative">
+                <button id="user-menu-btn" class="flex items-center gap-2 text-white font-fredoka text-base focus:outline-none hover:opacity-90 transition-opacity">
+                    <div class="w-8 h-8 rounded-full bg-white/20 border border-white flex items-center justify-center overflow-hidden">
+                        <span id="header-avatar-initials" class="text-xs font-sans font-bold">U</span>
+                    </div>
+                    <span id="header-user-name">Usuário</span>
+                    <i id="user-menu-arrow" class="fa-solid fa-chevron-down text-xs smooth-transition"></i>
+                </button>
+
+                <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-site-lightgreen/30 overflow-hidden font-fredoka py-1 z-50 text-sm">
+                    <a href="perfil_usuario.html" class="flex items-center gap-2 px-4 py-2.5 text-gray-700 bg-slate-50 font-semibold hover:bg-site-lightgreen/10 transition-colors">
+                        <i class="fa-solid fa-user opacity-70"></i> Meu Perfil
+                    </a>
+                    <a href="meus_animais.html" class="flex items-center gap-2 px-4 py-2.5 text-gray-700 hover:bg-site-lightgreen/20 transition-colors">
+                        <i class="fa-solid fa-paw opacity-70"></i> Meus Animais Cadastrados
+                    </a>
+                    <hr class="border-gray-100 my-1">
+                    <button id="btn-logout" class="w-full flex items-center gap-2 px-4 py-2.5 text-red-600 hover:bg-red-50 transition-colors text-left">
+                        <i class="fa-solid fa-right-from-bracket opacity-80"></i> Sair
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- CONTEÚDO PRINCIPAL (DADOS DO USUÁRIO & FOTO) -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <!-- Painel Lateral de Foto Interativa -->
+        <aside class="lg:col-span-1 space-y-6">
+            <div class="bg-site-lightgreen rounded-3xl p-6 text-center shadow-sm text-slate-900">
+                
+                <div class="relative w-36 h-36 mx-auto mb-4 rounded-full border-4 border-white bg-slate-200 flex items-center justify-center overflow-hidden group cursor-pointer shadow-sm">
+                    <div id="avatar-container" class="w-full h-full flex items-center justify-center text-slate-400">
+                        <i id="user-avatar-placeholder" class="fa-solid fa-user text-6xl smooth-transition group-hover:scale-110"></i>
+                        <img id="user-avatar" src="" alt="Foto de perfil" class="hidden w-full h-full object-cover smooth-transition group-hover:scale-110">
+                    </div>
+                    
+                    <label for="avatar-input" class="absolute inset-0 flex flex-col items-center justify-center bg-black/50 text-white text-xs font-semibold opacity-0 group-hover:opacity-100 smooth-transition cursor-pointer">
+                        <i class="fa-solid fa-camera mb-1 text-base"></i>
+                        <span>Alterar Foto</span>
+                    </label>
+                    <input type="file" id="avatar-input" accept="image/*" class="hidden">
+                </div>
+                
+                <h2 id="display-user-name" class="font-fredoka text-xl font-bold">Carregando...</h2>
+                <p id="display-user-email" class="text-slate-700 text-sm mb-4">...</p>
+                
+                <div class="bg-white/40 p-3 rounded-2xl flex flex-col justify-center items-center">
+                    <h4 id="pets-count" class="font-fredoka text-2xl font-bold text-slate-800">0</h4>
+                    <p class="text-slate-700 text-xs font-bold uppercase tracking-wide">Pets Cadastrados</p>
+                </div>
+
+                <div class="pt-4">
+                    <a href="Perfil_Dashboard.html" class="block w-full bg-site-coral hover:bg-site-coral-hover text-white font-fredoka font-medium py-3 rounded-2xl smooth-transition shadow-sm">
+                        <i class="fa-solid fa-plus-circle mr-1"></i> Cadastrar Novo Pet
+                    </a>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Seção Central de Dados do Usuário e Box de Divulgação -->
+        <section class="lg:col-span-2 space-y-6">
+            
+            <!-- BOX DE DESTAQUE: CADASTRAR ANIMAIS (REDIRECIONA PARA O DASHBOARD) -->
+            <a href="Perfil_Dashboard.html" class="block bg-gradient-to-r from-site-coral to-[#f58d8d] hover:to-site-coral text-white rounded-3xl p-6 sm:p-8 shadow-md hover:shadow-lg transition-all duration-300 group relative overflow-hidden">
+                <div class="relative z-10 flex items-center justify-between gap-4">
+                    <div>
+                        <h3 class="font-fredoka text-2xl sm:text-3xl font-bold flex items-center gap-2">
+                            <i class="fa-solid fa-paw animate-bounce"></i> Cadastrar Animais
+                        </h3>
+                        <p class="font-sans text-white/95 text-sm mt-1.5 max-w-lg leading-relaxed">
+                            Tem algum cãozinho ou gatinho precisando de um lar? Clique aqui para abrir a nossa ficha de divulgação e cadastrar um animalzinho agora mesmo!
+                        </p>
+                    </div>
+                    <div class="bg-white/20 p-4 rounded-full group-hover:scale-110 transition duration-300 shrink-0">
+                        <i class="fa-solid fa-arrow-right text-2xl"></i>
+                    </div>
+                </div>
+                <!-- Patinha decorativa gigante em background -->
+                <i class="fa-solid fa-paw text-white/5 text-9xl absolute right-[-20px] bottom-[-20px] pointer-events-none transform rotate-12"></i>
+            </a>
+
+            <!-- Formulário Meus Dados Básicos -->
+            <div class="bg-site-lightgreen rounded-3xl p-6 sm:p-8 shadow-sm">
+                <div class="border-b border-white/20 pb-4 mb-6">
+                    <h2 class="font-fredoka text-2xl font-bold text-slate-900">
+                        Meus Dados de Protetor
+                    </h2>
+                    <p class="text-slate-700 text-sm mt-1">Essas informações serão exibidas nos seus pets cadastrados para que as pessoas possam entrar em contato para adoção.</p>
+                </div>
+
+                <form id="user-profile-form" class="space-y-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="flex flex-col gap-1">
+                            <label for="user-name-input" class="text-sm font-semibold text-slate-800">Nome Completo</label>
+                            <input type="text" id="user-name-input" required class="w-full px-4 py-2.5 rounded-xl bg-white text-slate-800 outline-none focus:ring-2 focus:ring-site-coral/50 smooth-transition text-sm">
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <label for="user-email-input" class="text-sm font-semibold text-slate-800">E-mail</label>
+                            <input type="email" id="user-email-input" class="w-full px-4 py-2.5 rounded-xl bg-slate-100 text-slate-500 cursor-not-allowed outline-none text-sm" disabled>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="flex flex-col gap-1">
+                            <label for="user-phone-input" class="text-sm font-semibold text-slate-800">WhatsApp / Telefone</label>
+                            <input type="text" id="user-phone-input" placeholder="(81) 99999-9999" class="w-full px-4 py-2.5 rounded-xl bg-white text-slate-800 outline-none focus:ring-2 focus:ring-site-coral/50 smooth-transition text-sm">
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <label for="user-location-input" class="text-sm font-semibold text-slate-800">Localização (Cidade - Estado)</label>
+                            <input type="text" id="user-location-input" placeholder="Ex: Recife - PE" class="w-full px-4 py-2.5 rounded-xl bg-white text-slate-800 outline-none focus:ring-2 focus:ring-site-coral/50 smooth-transition text-sm">
+                        </div>
+                    </div>
+
+                    <div class="pt-2 flex justify-end">
+                        <button type="submit" class="bg-site-coral hover:bg-site-coral-hover text-white font-fredoka font-semibold px-8 py-3 rounded-2xl smooth-transition shadow-md">
+                            Salvar Alterações
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <!-- FEEDBACKS VISUAIS TOAST E ALERT -->
+    <div id="success-toast" class="fixed bottom-6 right-[-450px] bg-slate-800 text-white px-5 py-3 rounded-2xl shadow-xl flex items-center gap-3 font-semibold smooth-transition z-50 max-w-sm">
+        <i class="fa-solid fa-circle-check text-site-lightgreen text-xl"></i>
+        <div class="flex flex-col">
+            <span id="toast-title" class="text-sm font-bold">Sucesso!</span>
+            <span id="toast-desc" class="text-xs text-slate-300 font-medium">Ação realizada.</span>
+        </div>
+    </div>
+
+    <!-- Modal de Alerta Customizado -->
+    <div id="alert-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4 font-fredoka">
+        <div class="bg-white rounded-3xl p-6 max-w-sm w-full text-center shadow-2xl transition-all duration-300" id="alert-modal-content">
+            <div id="alert-modal-icon-container" class="w-16 h-16 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">
+                <i id="alert-modal-icon" class="fa-solid fa-circle-exclamation"></i>
+            </div>
+            <h3 id="alert-modal-title" class="text-xl font-bold text-slate-900 mb-2">Aviso</h3>
+            <p id="alert-modal-desc" class="text-slate-600 font-sans text-sm mb-6">...</p>
+            <button type="button" id="alert-modal-btn" class="w-full bg-site-coral hover:bg-site-coral-hover text-white font-semibold py-2.5 rounded-xl transition-colors">
+                Entendido
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Elementos Header e Sessão
+        const userMenuBtn = document.getElementById('user-menu-btn');
+        const userDropdown = document.getElementById('user-dropdown');
+        const userMenuArrow = document.getElementById('user-menu-arrow');
+        const btnLogout = document.getElementById('btn-logout');
+        const headerUserName = document.getElementById('header-user-name');
+        const headerAvatarInitials = document.getElementById('header-avatar-initials');
+
+        // Elementos de Perfil Lateral
+        const displayUserName = document.getElementById('display-user-name');
+        const displayUserEmail = document.getElementById('display-user-email');
+        const avatarInput = document.getElementById('avatar-input');
+        const avatarImage = document.getElementById('user-avatar');
+        const avatarPlaceholder = document.getElementById('user-avatar-placeholder');
+        const petsCountDisplay = document.getElementById('pets-count');
+
+        // Elementos Form Perfil
+        const userNameInput = document.getElementById('user-name-input');
+        const userEmailInput = document.getElementById('user-email-input');
+        const userPhoneInput = document.getElementById('user-phone-input');
+        const userLocationInput = document.getElementById('user-location-input');
+        const userForm = document.getElementById('user-profile-form');
+
+        // Modais e Toasts
+        const successToast = document.getElementById('success-toast');
+        const toastTitle = document.getElementById('toast-title');
+        const toastDesc = document.getElementById('toast-desc');
+
+        function triggerAlertModal(title, desc, isSuccess = false) {
+            const modal = document.getElementById('alert-modal');
+            const iconContainer = document.getElementById('alert-modal-icon-container');
+            const icon = document.getElementById('alert-modal-icon');
+            const mTitle = document.getElementById('alert-modal-title');
+            const mDesc = document.getElementById('alert-modal-desc');
+            const btn = document.getElementById('alert-modal-btn');
+
+            mTitle.textContent = title;
+            mDesc.textContent = desc;
+
+            if (isSuccess) {
+                iconContainer.className = "w-16 h-16 bg-emerald-100 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl";
+                icon.className = "fa-solid fa-circle-check";
+                btn.className = "w-full bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-2.5 rounded-xl transition-colors";
+            } else {
+                iconContainer.className = "w-16 h-16 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl";
+                icon.className = "fa-solid fa-circle-exclamation";
+                btn.className = "w-full bg-site-coral hover:bg-site-coral-hover text-white font-semibold py-2.5 rounded-xl transition-colors";
+            }
+
+            modal.classList.remove('hidden');
+            btn.onclick = () => { modal.classList.add('hidden'); };
+        }
+
+        // Carrega as informações locais salvas
+        async function carregarDadosUsuario() {
+            const raw = localStorage.getItem('usuario_logado');
+
+            if (!raw) {
+                triggerAlertModal("Acesso Negado", "Realize o login para acessar o perfil. Redirecionando...", false);
+                setTimeout(() => { window.location.href = "login.html"; }, 1800);
+                return;
+            }
+
+            let usuario;
+            try {
+                usuario = JSON.parse(raw);
+            } catch (e) {
+                localStorage.removeItem('usuario_logado');
+                window.location.href = "login.html";
+                return;
+            }
+
+            if (usuario.usuario) {
+                usuario = usuario.usuario;
+            }
+
+            const nome = usuario.nome?.trim() || 'Usuário do AdotaPet';
+            const email = usuario.email || '';
+
+            if (headerUserName) headerUserName.textContent = nome;
+            if (displayUserName) displayUserName.textContent = nome;
+            if (displayUserEmail) displayUserEmail.textContent = email;
+            if (userNameInput) userNameInput.value = nome;
+            if (userEmailInput) userEmailInput.value = email;
+            if (userPhoneInput) userPhoneInput.value = usuario.telefone || '';
+            if (userLocationInput) userLocationInput.value = usuario.localizacao || '';
+
+            // Foto persistente
+            if (usuario.foto) {
+                avatarImage.src = usuario.foto;
+                avatarImage.classList.remove('hidden');
+                avatarPlaceholder.classList.add('hidden');
+            }
+
+            // Iniciais
+            const partes = nome.split(/\s+/);
+            let initials = partes[0][0];
+            if (partes.length > 1) initials += partes[partes.length - 1][0];
+            if (headerAvatarInitials) {
+                headerAvatarInitials.textContent = initials.toUpperCase();
+            }
+
+            // Contagem dinâmica de pets do usuário
+            try {
+                const response = await fetch(`http://localhost:5001/explorar-animais`);
+                if (response.ok) {
+                    const animais = await response.json();
+                    const meusAnimais = animais.filter(pet => (pet.dono_email || pet.owner_email) === email);
+                    if (petsCountDisplay) petsCountDisplay.textContent = meusAnimais.length;
+                }
+            } catch (error) {
+                console.error("Erro ao puxar animais:", error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', carregarDadosUsuario);
+
+        // Upload Interativo de Imagem de Perfil com persistência no LocalStorage
+        avatarInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    avatarImage.src = event.target.result;
+                    avatarImage.classList.remove('hidden');
+                    avatarPlaceholder.classList.add('hidden');
+                    
+                    // Salva temporariamente a foto no LocalStorage
+                    const raw = localStorage.getItem('usuario_logado');
+                    if (raw) {
+                        let usuarioCompleto = JSON.parse(raw);
+                        let u = usuarioCompleto.usuario ? usuarioCompleto.usuario : usuarioCompleto;
+                        u.foto = event.target.result;
+                        if (usuarioCompleto.usuario) usuarioCompleto.usuario = u;
+                        else usuarioCompleto = u;
+                        localStorage.setItem('usuario_logado', JSON.stringify(usuarioCompleto));
+                    }
+                    triggerToast('Foto Atualizada!', 'Sua foto de perfil foi alterada com sucesso.');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Dropdown Header
+        if (userMenuBtn && userDropdown) {
+            userMenuBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                userDropdown.classList.toggle('hidden');
+                if (userMenuArrow) userMenuArrow.classList.toggle('rotate-180');
+            });
+
+            document.addEventListener('click', function(e) {
+                if (!userMenuBtn.contains(e.target) && !userDropdown.contains(e.target)) {
+                    userDropdown.classList.add('hidden');
+                    if (userMenuArrow) userMenuArrow.classList.remove('rotate-180');
+                }
+            });
+
+            if (btnLogout) {
+                btnLogout.addEventListener('click', function() {
+                    localStorage.removeItem('usuario_logado');
+                    triggerAlertModal("Sessão Encerrada", "Volte sempre!", true);
+                    setTimeout(() => { window.location.href = "login.html"; }, 1500);
+                });
+            }
+        }
+
+        function triggerToast(title, description) {
+            toastTitle.textContent = title;
+            toastDesc.textContent = description;
+            successToast.classList.remove('right-[-450px]');
+            successToast.classList.add('right-6');
+            setTimeout(() => {
+                successToast.classList.remove('right-6');
+                successToast.classList.add('right-[-450px]');
+            }, 3000);
+        }
+
+        // Salvar dados de Protetor no LocalStorage
+        userForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const raw = localStorage.getItem('usuario_logado');
+            if (raw) {
+                let usuarioCompleto = JSON.parse(raw);
+                let u = usuarioCompleto.usuario ? usuarioCompleto.usuario : usuarioCompleto;
+                
+                u.nome = userNameInput.value;
+                u.telefone = userPhoneInput.value;
+                u.localizacao = userLocationInput.value;
+                
+                if (usuarioCompleto.usuario) {
+                    usuarioCompleto.usuario = u;
+                } else {
+                    usuarioCompleto = u;
+                }
+
+                localStorage.setItem('usuario_logado', JSON.stringify(usuarioCompleto));
+                carregarDadosUsuario();
+                triggerToast('Dados Atualizados!', 'Seus dados de protetor foram salvos no sistema.');
+            }
+        });
+    </script>
+</body>
+</html>
