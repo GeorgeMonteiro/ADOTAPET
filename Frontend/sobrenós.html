@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adotapet - Sobre Nós</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght=400;500;600;700&family=Inter:wght=400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        adota: {
+                            bg: '#93b082',       /* Verde oliva oficial */
+                            card: '#c3d3ba',     /* Verde pastel dos containers/filtros */
+                            coral: '#f37676',    /* Coral oficial */
+                            'coral-hover': '#e26363',
+                            textDark: '#000000'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        fredoka: ['Fredoka', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-adota-bg font-fredoka min-h-screen text-white flex flex-col justify-between select-none">
+
+    <!-- NAVBAR: Perfeitamente alinhada com a inicial -->
+    <header class="w-full max-w-7xl mx-auto px-10 pt-10 flex items-center justify-between flex-shrink-0 z-50">
+        <nav class="flex items-center gap-10 text-base font-medium">
+            <a href="index.html" class="text-white/90 hover:text-white transition-all pb-1">
+                início
+            </a>
+            <a href="sobre.html" class="text-white tracking-wide hover:opacity-80 transition-all border-b-2 border-white pb-1">
+                sobre nós
+            </a>
+            <a href="index.html#explorar" class="text-white/90 hover:text-white transition-all pb-1">
+                animais para adoção
+            </a>
+        </nav>
+        
+        <div class="flex items-center gap-8 text-base font-medium">
+            <a href="login.html" class="text-white/90 hover:text-white transition-all">
+                login
+            </a>
+            <a href="login.html" class="bg-adota-coral hover:bg-adota-coral-hover text-white px-6 py-3 rounded-xl shadow-md transition-all text-center font-semibold">
+                cadastrar-se
+            </a>
+        </div>
+    </header>
+
+    <!-- CONTEÚDO PRINCIPAL: Apresentação dedicada da história e do projeto -->
+    <main class="w-full max-w-5xl mx-auto px-10 py-16 flex-grow flex flex-col justify-center">
+        
+        <div class="bg-adota-card/30 rounded-[32px] p-8 sm:p-12 border border-white/15 shadow-md space-y-12">
+            
+            <!-- Cabeçalho Principal -->
+            <div class="text-center space-y-4">
+                <span class="bg-adota-coral text-white text-xs font-bold uppercase tracking-wider px-4 py-1.5 rounded-full">conheça a nossa história</span>
+                <h1 class="font-bold text-4xl sm:text-5xl tracking-tight mt-2 text-white">Sobre o AdotaPet</h1>
+                <p class="font-medium text-white/90 text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed">
+                    Mais que uma tecnologia, um movimento de carinho, respeito e acolhimento para com os animais.
+                </p>
+            </div>
+
+            <hr class="border-white/10">
+
+            <!-- Corpo do Texto e Layout de Pilares -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+                
+                <!-- Coluna de Texto de Apresentação -->
+                <div class="lg:col-span-7 space-y-6 text-white font-sans text-base sm:text-lg leading-relaxed">
+                    <h3 class="font-fredoka font-bold text-2xl text-white">Como tudo começou?</h3>
+                    <p class="text-white/95">
+                        O <strong>AdotaPet</strong> nasceu a partir de uma constatação simples, porém preocupante: a grande quantidade de cães e gatos vivendo nas ruas ou aguardando por uma família em abrigos superlotados, sem que as pessoas soubessem como encontrá-los de forma centralizada.
+                    </p>
+                    <p class="text-white/90">
+                        Nossa missão é unir a tecnologia ao amor animal, encurtando distâncias e eliminando barreiras burocráticas no processo de adoção responsável. Construímos um ecossistema simples onde ONGs, protetores independentes e adotantes ideais se encontram de forma rápida e segura.
+                    </p>
+                    <p class="text-white/90">
+                        Cada funcionalidade da plataforma foi pensada para dar dignidade e o máximo de visibilidade aos bichinhos, oferecendo ferramentas para detalhar traços de personalidade, porte, fotos reais e até vídeos para derreter o seu coração!
+                    </p>
+                </div>
+
+                <!-- Coluna Lateral de Pilares / Valores -->
+                <div class="lg:col-span-5 space-y-4 font-sans">
+                    <h3 class="font-fredoka font-bold text-xl text-white mb-2 px-1">Nossos Compromissos</h3>
+                    
+                    <!-- Card Compromisso 1 -->
+                    <div class="bg-white/10 backdrop-blur-sm border border-white/10 p-5 rounded-2xl flex items-start gap-4">
+                        <div class="bg-adota-coral text-white p-3 rounded-xl flex-shrink-0">
+                            <i class="fa-solid fa-heart text-xl"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-base font-fredoka mb-1">Amor Incondicional</h4>
+                            <p class="text-sm text-white/85 leading-relaxed">Acreditamos que todo pet, independente de idade ou raça, merece amor e um teto seguro.</p>
+                        </div>
+                    </div>
+
+                    <!-- Card Compromisso 2 -->
+                    <div class="bg-white/10 backdrop-blur-sm border border-white/10 p-5 rounded-2xl flex items-start gap-4">
+                        <div class="bg-white text-[#93b082] p-3 rounded-xl flex-shrink-0">
+                            <i class="fa-solid fa-shield text-xl"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-base font-fredoka mb-1">Adoção Responsável</h4>
+                            <p class="text-sm text-white/85 leading-relaxed">Educamos e preparamos os novos tutores para garantir os cuidados necessários e evitar abandonos.</p>
+                        </div>
+                    </div>
+
+                    <!-- Card Compromisso 3 -->
+                    <div class="bg-white/10 backdrop-blur-sm border border-white/10 p-5 rounded-2xl flex items-start gap-4">
+                        <div class="bg-adota-coral text-white p-3 rounded-xl flex-shrink-0">
+                            <i class="fa-solid fa-hand-holding-heart text-xl"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-base font-fredoka mb-1">Apoio de Verdade</h4>
+                            <p class="text-sm text-white/85 leading-relaxed">Oferecemos ferramentas gratuitas de divulgação para quem resgata e cuida com tanta dedicação.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Botão de Engajamento no rodapé -->
+            <div class="text-center pt-4">
+                <a href="index.html#explorar" class="inline-block bg-adota-coral hover:bg-adota-coral-hover text-white text-lg font-semibold px-12 py-4 rounded-[22px] shadow-md transition-all tracking-wide text-center transform hover:scale-102 duration-200">
+                    Começar a Explorar Pets <i class="fa-solid fa-arrow-right ml-2 text-sm"></i>
+                </a>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- FOOTER: Idêntico à Home -->
+    <footer class="w-full max-w-7xl mx-auto px-10 pb-10 flex justify-between items-center text-white/80 text-base font-medium flex-shrink-0">
+        <span>Encontre seu pet</span>
+        <span class="text-white/30 text-lg">•</span>
+        <span>Cadastre pets</span>
+        <span class="text-white/30 text-lg">•</span>
+        <span>Converse com tutores</span>
+    </footer>
+
+</body>
+</html>
