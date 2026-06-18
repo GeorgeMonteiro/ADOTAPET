@@ -53,5 +53,19 @@ def criar_tabela():
         )
     """)
 
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS mensagens (
+            id SERIAL PRIMARY KEY,
+            animal_id INT NOT NULL,
+            remetente_email TEXT NOT NULL,
+            destinatario_email TEXT NOT NULL,
+            conteudo TEXT NOT NULL,
+            data_envio TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (animal_id) REFERENCES animais(id) ON DELETE CASCADE
+        )
+    """)
+
     conn.commit()
     conn.close()
+
+    

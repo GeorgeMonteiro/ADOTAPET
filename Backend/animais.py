@@ -14,20 +14,18 @@ def criar_animal(dados):
             idade,
             porte,
             genero,
-            localizacao,
             sobre,
             imagem_principal,
             dono_nome,
             dono_email
         )
-        VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+        VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)
     """, (
         dados["especie"],
         dados["raca"],
         dados["idade"],
         dados["porte"],
         dados["genero"],
-        dados["localizacao"],
         dados["sobre"],
         dados["imagem_principal"],
         dados["dono_nome"],

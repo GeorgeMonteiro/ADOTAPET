@@ -241,5 +241,60 @@ def uploaded_file(filename):
     return send_from_directory(UPLOAD_FOLDER, filename)
 
 
+# ===================== SISTEMA DE CHAT =====================
+@app.route("/chat/enviar", methods=["POST"])
+def enviar_mensagem():
+    dados = request.json or {}
+    animal_id = dados.get("animal_id")
+    remetente = dados.get("remetente_email")
+    destinatario = dados.get("destinatario_email")
+    conteudo = dados.get("conteudo")
+
+    if not all([animal_id, remetente, destinatario, conteudo]):
+        return jsonify({"erro": "Campos obrigatórios ausentes"}), 400
+
+    try:
+        conn = conectar_db()
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT INTO mensagens (animal_id, remetente_email, destinatario_email, conteudo)
+            VALUES (%s, %s, %s, %s)
+        """, (animal_id, remetente, destinatario, conteudo))
+        conn.commit()
+        conn.close()
+        return jsonify({"mensagem": "Mensagem enviada com sucesso!"}), 201
+    except Exception as e:
+        return jsonify({"erro": str(e)}), 500
+
+
+@app.route("/chat/historico", methods=["GET"])
+def historico_chat():
+    animal_id = request.args.get("animal_id")
+    usuario1 = request.args.get("usuario1")
+    usuario2 = request.args.get("usuario2")
+
+    try:
+        conn = conectar_db()
+        cursor = conn.cursor()
+        # Busca a conversa bidirecional ordenada por tempo
+        cursor.execute("""
+            SELECT remetente_email, conteudo, to_char(data_envio, 'HH24:MI') 
+            FROM mensagens
+            WHERE animal_id = %s 
+              AND ((remetente_email = %s AND destinatario_email = %s)
+               OR (remetente_email = %s AND destinatario_email = %s))
+            ORDER BY data_envio ASC
+        """, (animal_id, usuario1, usuario2, usuario2, usuario1))
+        
+        mensagens = cursor.fetchall()
+        conn.close()
+
+        lista = [{"remetente": m[0], "conteudo": m[1], "hora": m[2]} for m in mensagens]
+        return jsonify(lista), 200
+    except Exception as e:
+        return jsonify({"erro": str(e)}), 500
+
+
 if __name__ == "__main__":
     app.run(debug=True, port=5001)
+

@@ -295,12 +295,11 @@ document.addEventListener("DOMContentLoaded", () => {
                             </span>
                         </div>
                         
-                        <div class="mt-4">
-                            <button class="w-full bg-[#f37676] hover:bg-[#e26363] text-white font-fredoka text-base font-semibold py-2.5 rounded-full transition-all shadow-sm text-center">
-                                Ver detalhes
+                       <div class="mt-4">
+                            <button onclick="entrarEmContato(${pet.id}, '${pet.dono_email}')" class="w-full bg-[#f37676] hover:bg-[#e26363] text-white font-fredoka text-base font-semibold py-2.5 rounded-full transition-all shadow-sm text-center cursor-pointer">
+                                entrar em contato
                             </button>
                         </div>
-                    </div>
                 `;
                 fragment.appendChild(card);
             });
@@ -366,12 +365,7 @@ const breedsData = {
 
 async function buscarAnimais(especie, raca, porte, localizacao) {
     try {
-        const params = new URLSearchParams({
-            especie,
-            raca,
-            porte,
-            localizacao
-        });
+        const params = new URLSearchParams({ especie, raca, porte, localizacao });
 
         const resposta = await fetch(`http://localhost:5001/explorar-animais?${params}`);
         const pets = await resposta.json();
@@ -380,23 +374,67 @@ async function buscarAnimais(especie, raca, porte, localizacao) {
             throw new Error(pets.erro);
         }
 
-        // MAPEAMENTO CORRETO: Sincroniza as chaves do seu Banco com as variáveis do Card
-        const petsFormatados = pets.map(pet => ({
-            image: pet.imagem_principal ? `http://localhost:5001/${pet.imagem_principal}` : 'https://via.placeholder.com/400',
-            breed: pet.raca || pet.breed || "Sem Raça Definida",
-            species: pet.especie || pet.species || (especie !== 'todos' ? especie : 'Pet'),
-            description: pet.descricao || pet.description || '',
-            location: pet.localizacao || pet.location || 'Não informada',
-            status: pet.status || 'Disponível'
-        }));
+        /* CORREÇÃO DO MAPEAMENTO DA TUPLA:
+           De acordo com a criação da tabela no seu db.py:
+           animal[0] -> id
+           animal[1] -> especie
+           animal[2] -> raca
+           animal[3] -> idade
+           animal[4] -> porte
+           animal[5] -> genero
+           animal[6] -> localizacao
+           animal[7] -> sobre (descrição)
+           animal[8] -> imagem_principal
+           ...
+           animal[12] -> dono_email
+           animal[13] -> status
+        */
+        const petsFormatados = pets.map(animal => {
+            // Se o back-end já devolver como objeto usa a propriedade, se for array usa o índice
+            const idValido = animal.id !== undefined ? animal.id : animal[0];
+            const racaValida = animal.raca || animal[2] || "Sem Raça Definida";
+            const especieValida = animal.especie || animal[1] || "Pet";
+            const localizacaoValida = animal.localizacao || animal[6] || "Não informada";
+            const descricaoValida = animal.sobre || animal[7] || "Sem descrição informada.";
+            const imagemValida = animal.imagem_principal || animal[8];
+            const emailValido = animal.dono_email || animal[12] || "suporte@adotapet.com";
+            const statusValido = animal.status || animal[13] || "Disponível";
 
-        // Renderiza na tela chamando a função centralizada e limpa de erros
+            return {
+                id: idValido,
+                image: imagemValida ? `http://localhost:5001/${imagemValida}` : 'https://via.placeholder.com/400',
+                breed: racaValida,
+                species: especieValida,
+                description: descricaoValida,
+                location: localizacaoValida,
+                status: statusValido,
+                dono_email: emailValido
+            };
+        });
+
+        console.log("Pets carregados com sucesso para o ecrã:", petsFormatados);
+
         if (typeof window.renderizarCardsNaTela === "function") {
             window.renderizarCardsNaTela(petsFormatados);
         }
 
     } catch (erro) {
-        console.error(erro);
+        console.error("Erro ao buscar animais da API:", erro);
         alert("Erro ao buscar animais.");
     }
+}
+
+function entrarEmContato(animalId, donoEmail) {
+    console.log("-> Botão Clicado! ID do Animal:", animalId, "E-mail do Dono:", donoEmail);
+    
+    if (!animalId || !donoEmail) {
+        console.error("ERRO: ID do animal ou E-mail do dono estão vazios!");
+        alert("Não foi possível iniciar o chat. Dados incompletos.");
+        return;
+    }
+    
+    // Mude de mensagens.html para chatInterno.html se for o caso:
+    const urlDestino = `chatInterno.html?id=${animalId}&dono=${encodeURIComponent(donoEmail)}`;
+    console.log("Redirecionando para:", urlDestino);
+    window.location.href = urlDestino;
 }
