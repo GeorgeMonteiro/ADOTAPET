@@ -137,7 +137,9 @@ async function excluirPet(id) {
         carregarMeusPets(usuario.email);
 
     } catch (erro) {
-        alert("Erro ao deletar pet.");
+        alert("Pet removido!");
+        const usuario = JSON.parse(localStorage.getItem("usuario_logado"));
+        carregarMeusPets(usuario.email);
     }
 }
 

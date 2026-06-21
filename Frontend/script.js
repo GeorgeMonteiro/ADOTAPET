@@ -2,7 +2,6 @@
 // 1. GERENCIAMENTO DE TELAS E AUTENTICAÇÃO (LOGIN / CADASTRO)
 // ========================================================================
 
-// ===== ALTERNAR ENTRE TELAS =====
 function toggleScreens() {
     const loginCard = document.getElementById('login-card');
     const registerCard = document.getElementById('register-card');
@@ -12,7 +11,20 @@ function toggleScreens() {
     }
 }
 
-// Aguarda o DOM carregar completamente antes de interagir com os elementos
+// Escopo seguro para extração das informações do usuário ativo
+const rawStorageUser = localStorage.getItem("usuario_logado");
+let emailUsuarioLogado = null;
+
+try {
+    if (rawStorageUser) {
+        const dadosParsed = JSON.parse(rawStorageUser);
+        const usuarioObj = dadosParsed.usuario ? dadosParsed.usuario : dadosParsed;
+        emailUsuarioLogado = usuarioObj.email;
+    }
+} catch (err) {
+    console.error("Erro ao processar dados da sessão:", err);
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     
     // ===== VALIDAÇÃO DE SENHA EM TEMPO REAL =====
@@ -158,7 +170,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // ===== 2. CONTROLE DE SESSÃO E NOME DINÂMICO =====
+    // ===== 2. CONTROLE DE SESSÃO AND NOME DINÂMICO =====
     const usuarioLogadoString = localStorage.getItem("usuario_logado");
     const ehPaginaPublica = window.location.pathname.includes("login.html") || window.location.pathname.includes("cadastro.html") || window.location.pathname.includes("index.html");
 
@@ -236,7 +248,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (typeSelect && breedSelect && petsContainer) {
 
-       // Função global/compartilhada para renderizar os cards com as tags abaixo da imagem
         window.renderizarCardsNaTela = function(list) {
             petsContainer.innerHTML = '';
             
@@ -252,7 +263,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 const card = document.createElement('div');
                 card.className = "bg-white rounded-[28px] overflow-hidden p-4 shadow-sm border border-slate-100 flex flex-col gap-4";
                 
-                // Força o texto para 'disponível' se vier do banco antigo como 'não adotado'
                 let statusPet = pet.status || 'disponível';
                 if (statusPet.toLowerCase() === 'não adotado') {
                     statusPet = 'disponível';
@@ -260,9 +270,27 @@ document.addEventListener("DOMContentLoaded", () => {
                 
                 const statusColor = statusPet.toLowerCase() === 'adotado' ? 'bg-gray-400' : 'bg-[#93b082]';
 
+                // === LOGICA DE VALIDAÇÃO CONDICIONAL (OPÇÃO B) ===
+                const ehMeuPet = (pet.dono_email && emailUsuarioLogado && pet.dono_email.trim().toLowerCase() === emailUsuarioLogado.trim().toLowerCase());
+                
+                let areaBotaoHTML = '';
+                if (ehMeuPet) {
+                    areaBotaoHTML = `
+                        <button disabled class="w-full bg-slate-200 text-slate-400 font-fredoka text-base font-semibold py-2.5 rounded-full shadow-inner text-center cursor-not-allowed">
+                            Seu Pet
+                        </button>
+                    `;
+                } else {
+                    areaBotaoHTML = `
+                        <button onclick="entrarEmContato(${pet.id}, '${pet.dono_email}', '${pet.dono_nome || 'Protetor'}')" class="w-full bg-[#f37676] hover:bg-[#e26363] text-white font-fredoka text-base font-semibold py-2.5 rounded-full transition-all shadow-sm text-center cursor-pointer">
+                            entrar em contato
+                        </button>
+                    `;
+                }
+
                 card.innerHTML = `
                     <div class="h-56 bg-slate-200 relative rounded-[20px] overflow-hidden">
-                        <img src="${pet.image}" alt="${pet.breed}" class="w-full h-full object-cover" loading="lazy">
+                        <img src="${pet.image || pet.imagem_principal}" alt="${pet.breed}" class="w-full h-full object-cover" loading="lazy">
                     </div>
 
                     <div class="flex flex-col flex-grow justify-between px-1 pb-1">
@@ -295,11 +323,10 @@ document.addEventListener("DOMContentLoaded", () => {
                             </span>
                         </div>
                         
-                       <div class="mt-4">
-                            <button onclick="entrarEmContato(${pet.id}, '${pet.dono_email}')" class="w-full bg-[#f37676] hover:bg-[#e26363] text-white font-fredoka text-base font-semibold py-2.5 rounded-full transition-all shadow-sm text-center cursor-pointer">
-                                entrar em contato
-                            </button>
+                        <div class="mt-4">
+                            ${areaBotaoHTML}
                         </div>
+                    </div>
                 `;
                 fragment.appendChild(card);
             });
@@ -341,7 +368,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const selectedSize = sizeEl ? sizeEl.value : 'todos';
                 const selectedLocation = locationEl ? locationEl.value : 'todas';
 
-                buscarAnimais(selectedType,selectedBreed,selectedSize,selectedLocation);
+                buscarAnimais(selectedType, selectedBreed, selectedSize, selectedLocation);
             });
         }
 
@@ -349,6 +376,24 @@ document.addEventListener("DOMContentLoaded", () => {
         buscarAnimais("todos", "todas", "todos", "todas");
     }
 });
+
+function entrarEmContato(animalId, donoEmail, donoNome) {
+    if (!animalId || !donoEmail) {
+        console.error("Dados do pet ou do dono incompletos.");
+        alert("Não foi possível iniciar o chat. Dados incompletos.");
+        return;
+    }
+    
+    const fotoDonoUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(donoNome)}&background=random&color=fff&size=128`;
+
+    localStorage.setItem("dados_dono_chat_ativo", JSON.stringify({
+        nome: donoNome,
+        email: donoEmail,
+        foto: fotoDonoUrl
+    }));
+    
+    window.location.href = `chatInterno.html?id=${animalId}&dono=${encodeURIComponent(donoEmail)}`;
+}
 
 const breedsData = {
     gato: [
@@ -374,45 +419,19 @@ async function buscarAnimais(especie, raca, porte, localizacao) {
             throw new Error(pets.erro);
         }
 
-        /* CORREÇÃO DO MAPEAMENTO DA TUPLA:
-           De acordo com a criação da tabela no seu db.py:
-           animal[0] -> id
-           animal[1] -> especie
-           animal[2] -> raca
-           animal[3] -> idade
-           animal[4] -> porte
-           animal[5] -> genero
-           animal[6] -> localizacao
-           animal[7] -> sobre (descrição)
-           animal[8] -> imagem_principal
-           ...
-           animal[12] -> dono_email
-           animal[13] -> status
-        */
-        const petsFormatados = pets.map(animal => {
-            // Se o back-end já devolver como objeto usa a propriedade, se for array usa o índice
-            const idValido = animal.id !== undefined ? animal.id : animal[0];
-            const racaValida = animal.raca || animal[2] || "Sem Raça Definida";
-            const especieValida = animal.especie || animal[1] || "Pet";
-            const localizacaoValida = animal.localizacao || animal[6] || "Não informada";
-            const descricaoValida = animal.sobre || animal[7] || "Sem descrição informada.";
-            const imagemValida = animal.imagem_principal || animal[8];
-            const emailValido = animal.dono_email || animal[12] || "suporte@adotapet.com";
-            const statusValido = animal.status || animal[13] || "Disponível";
-
+        const petsFormatados = pets.map(pet => {
             return {
-                id: idValido,
-                image: imagemValida ? `http://localhost:5001/${imagemValida}` : 'https://via.placeholder.com/400',
-                breed: racaValida,
-                species: especieValida,
-                description: descricaoValida,
-                location: localizacaoValida,
-                status: statusValido,
-                dono_email: emailValido
+                id: pet.id || 0,
+                image: pet.imagem_principal ? `http://localhost:5001/${pet.imagem_principal}` : 'https://via.placeholder.com/400',
+                breed: pet.breed || "Sem Raça Definida",
+                species: pet.species || (especie !== 'todos' ? especie : 'Pet'),
+                description: pet.description || 'Sem descrição informada.',
+                location: pet.location || 'Não informada',
+                status: pet.status || 'Disponível',
+                dono_email: pet.dono_email || '',
+                dono_nome: pet.dono_nome || 'Protetor'
             };
         });
-
-        console.log("Pets carregados com sucesso para o ecrã:", petsFormatados);
 
         if (typeof window.renderizarCardsNaTela === "function") {
             window.renderizarCardsNaTela(petsFormatados);
@@ -422,19 +441,4 @@ async function buscarAnimais(especie, raca, porte, localizacao) {
         console.error("Erro ao buscar animais da API:", erro);
         alert("Erro ao buscar animais.");
     }
-}
-
-function entrarEmContato(animalId, donoEmail) {
-    console.log("-> Botão Clicado! ID do Animal:", animalId, "E-mail do Dono:", donoEmail);
-    
-    if (!animalId || !donoEmail) {
-        console.error("ERRO: ID do animal ou E-mail do dono estão vazios!");
-        alert("Não foi possível iniciar o chat. Dados incompletos.");
-        return;
-    }
-    
-    // Mude de mensagens.html para chatInterno.html se for o caso:
-    const urlDestino = `chatInterno.html?id=${animalId}&dono=${encodeURIComponent(donoEmail)}`;
-    console.log("Redirecionando para:", urlDestino);
-    window.location.href = urlDestino;
 }

@@ -1,6 +1,5 @@
 from db import conectar_db
 
-
 # ===== CADASTRAR ANIMAL =====
 def criar_animal(dados):
 
@@ -14,18 +13,20 @@ def criar_animal(dados):
             idade,
             porte,
             genero,
+            localizacao,
             sobre,
             imagem_principal,
             dono_nome,
             dono_email
         )
-        VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)
+        VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) -- 
     """, (
         dados["especie"],
         dados["raca"],
         dados["idade"],
         dados["porte"],
         dados["genero"],
+        dados["localizacao"], 
         dados["sobre"],
         dados["imagem_principal"],
         dados["dono_nome"],
@@ -34,7 +35,6 @@ def criar_animal(dados):
 
     conn.commit()
     conn.close()
-
 
 # ===== BUSCAR ANIMAIS DO USUÁRIO =====
 def buscar_animais_usuario(email):

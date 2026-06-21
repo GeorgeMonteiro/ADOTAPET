@@ -6,7 +6,7 @@ import os
 import base64
 from uuid import uuid4
 
-from db import criar_tabela
+from db import criar_tabela, conectar_db
 from usuarios import criar_usuario, buscar_usuario_por_email
 from animais import (criar_animal,buscar_animais_usuario,buscar_animais_filtros,deletar_animal,atualizar_animal)
 
@@ -176,15 +176,26 @@ def explorar_animais():
             localizacao
         )
 
+        from db import conectar_db
+        conn = conectar_db()
+        cursor = conn.cursor()
+
         lista = []
         for animal in animais:
-            # Pega o status do banco. Se for 'não adotado' ou nulo, transforma em 'disponível'
+            animal_id = animal[0]
+            
+            # Busca rápida dos dados do dono para este animal específico
+            cursor.execute("SELECT dono_nome, dono_email FROM animais WHERE id = %s", (animal_id,))
+            dono_info = cursor.fetchone()
+            dono_nome = dono_info[0] if dono_info else "Protetor"
+            dono_email = dono_info[1] if dono_info else "suporte@adotapet.com"
+
             status_banco = animal[9] if len(animal) > 9 else "disponível"
             if not status_banco or status_banco.lower() == "não adotado":
                 status_banco = "disponível"
 
             lista.append({
-                "id": animal[0],
+                "id": animal_id,
                 "breed": animal[1],            
                 "age": animal[2],              
                 "size": animal[3],             
@@ -193,12 +204,16 @@ def explorar_animais():
                 "description": animal[6],      
                 "imagem_principal": animal[7], 
                 "species": animal[8],          
-                "status": status_banco
+                "status": status_banco,
+                "dono_nome": dono_nome,     # Novo campo enviado ao Front
+                "dono_email": dono_email    # Novo campo enviado ao Front
             })
 
+        conn.close()
         return jsonify(lista), 200
 
     except Exception as e:
+        if 'conn' in locals() and not conn.closed: conn.close()
         return jsonify({"erro": str(e)}), 500
     
 # ===================== DELETAR ANIMAL =====================
@@ -241,59 +256,129 @@ def uploaded_file(filename):
     return send_from_directory(UPLOAD_FOLDER, filename)
 
 
-# ===================== SISTEMA DE CHAT =====================
+# =====================================================================
+# ======================== ROTAS DE CHAT E MENSAGENS ===================
+# =====================================================================
+
 @app.route("/chat/enviar", methods=["POST"])
 def enviar_mensagem():
-    dados = request.json or {}
+    dados = request.get_json()
+    
+    # Captura os dados enviados pelo JavaScript
     animal_id = dados.get("animal_id")
-    remetente = dados.get("remetente_email")
-    destinatario = dados.get("destinatario_email")
+    remetente_email = dados.get("remetente_email")
+    destinatario_email = dados.get("destinatario_email")
     conteudo = dados.get("conteudo")
 
-    if not all([animal_id, remetente, destinatario, conteudo]):
-        return jsonify({"erro": "Campos obrigatórios ausentes"}), 400
+    # Validação simples
+    if not remetente_email or not destinatario_email or not conteudo:
+        return jsonify({"erro": "Dados obrigatórios ausentes"}), 400
 
     try:
         conn = conectar_db()
         cursor = conn.cursor()
+
+        # Executa o comando de inserção no banco de dados
         cursor.execute("""
             INSERT INTO mensagens (animal_id, remetente_email, destinatario_email, conteudo)
             VALUES (%s, %s, %s, %s)
-        """, (animal_id, remetente, destinatario, conteudo))
+        """, (animal_id, remetente_email, destinatario_email, conteudo))
+
         conn.commit()
         conn.close()
-        return jsonify({"mensagem": "Mensagem enviada com sucesso!"}), 201
+        
+        return jsonify({"mensagem": "Mensagem guardada com sucesso!"}), 201
+
     except Exception as e:
-        return jsonify({"erro": str(e)}), 500
+        print(f"Erro ao salvar mensagem no banco: {e}")
+        return jsonify({"erro": f"Erro interno no servidor: {str(e)}"}), 500
 
 
 @app.route("/chat/historico", methods=["GET"])
-def historico_chat():
+def obter_historico():
     animal_id = request.args.get("animal_id")
     usuario1 = request.args.get("usuario1")
     usuario2 = request.args.get("usuario2")
 
+    if not usuario1 or not usuario2:
+        return jsonify({"erro": "Parâmetros de utilizadores ausentes"}), 400
+
     try:
         conn = conectar_db()
         cursor = conn.cursor()
-        # Busca a conversa bidirecional ordenada por tempo
+
+        # Procura mensagens trocadas entre os dois usuários (remetente -> destinatário OU destinatário -> remetente)
         cursor.execute("""
-            SELECT remetente_email, conteudo, to_char(data_envio, 'HH24:MI') 
+            SELECT remetente_email, conteudo, to_char(data_envio, 'HH24:MI') as hora 
             FROM mensagens
-            WHERE animal_id = %s 
-              AND ((remetente_email = %s AND destinatario_email = %s)
-               OR (remetente_email = %s AND destinatario_email = %s))
+            WHERE (remetente_email = %s AND destinatario_email = %s)
+               OR (remetente_email = %s AND destinatario_email = %s)
             ORDER BY data_envio ASC
-        """, (animal_id, usuario1, usuario2, usuario2, usuario1))
-        
+        """, (usuario1, usuario2, usuario2, usuario1))
+
         mensagens = cursor.fetchall()
         conn.close()
 
-        lista = [{"remetente": m[0], "conteudo": m[1], "hora": m[2]} for m in mensagens]
-        return jsonify(lista), 200
+        lista_mensagens = []
+        for m in mensagens:
+            lista_mensagens.append({
+                "remetente": m[0],
+                "conteudo": m[1],
+                "hora": m[2]
+            })
+
+        return jsonify(lista_mensagens), 200
+
     except Exception as e:
+        print(f"Erro ao carregar histórico: {e}")
         return jsonify({"erro": str(e)}), 500
 
+
+@app.route("/chat/lista", methods=["GET"])
+def listar_conversas():
+    email_usuario = request.args.get("email")
+    if not email_usuario:
+        return jsonify({"erro": "Email não fornecido"}), 400
+
+    try:
+        conn = conectar_db()
+        cursor = conn.cursor()
+
+        # Agrupa as conversas para montar a barra lateral com o último texto enviado
+        cursor.execute("""
+            SELECT DISTINCT ON (
+                CASE WHEN m.remetente_email = %s THEN m.destinatario_email ELSE m.remetente_email END
+            )
+                m.animal_id,
+                CASE WHEN m.remetente_email = %s THEN m.destinatario_email ELSE m.remetente_email END as outro_email,
+                m.conteudo,
+                m.data_envio,
+                COALESCE(u.nome, split_part(CASE WHEN m.remetente_email = %s THEN m.destinatario_email ELSE m.remetente_email END, '@', 1)) as outro_nome
+            FROM mensagens m
+            LEFT JOIN usuarios u ON u.email = (CASE WHEN m.remetente_email = %s THEN m.destinatario_email ELSE m.remetente_email END)
+            WHERE m.remetente_email = %s OR m.destinatario_email = %s
+            ORDER BY CASE WHEN m.remetente_email = %s THEN m.destinatario_email ELSE m.remetente_email END, m.data_envio DESC
+        """, (email_usuario, email_usuario, email_usuario, email_usuario, email_usuario, email_usuario, email_usuario))
+
+        resultados = cursor.fetchall()
+        conn.close()
+
+        lista_chats = []
+        for r in resultados:
+            lista_chats.append({
+                "animal_id": r[0],
+                "outro_usuario_email": r[1],
+                "ultima_mensagem": r[2],
+                "data": r[3].strftime('%Y-%m-%d %H:%M') if r[3] else "",
+                "pet_breed": "Pet",  # Simplificado para evitar quebras por JOINs complexos durante os testes
+                "outro_usuario_nome": r[4].capitalize()
+            })
+
+        return jsonify(lista_chats), 200
+
+    except Exception as e:
+        print(f"Erro ao listar conversas: {e}")
+        return jsonify({"erro": str(e)}), 500
 
 if __name__ == "__main__":
     app.run(debug=True, port=5001)

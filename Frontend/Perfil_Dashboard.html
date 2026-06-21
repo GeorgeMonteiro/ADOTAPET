@@ -109,11 +109,6 @@
 
                 <form id="pet-registration-form" class="space-y-5">
                     <div class="flex flex-col gap-1">
-                        <label for="pet-name" class="text-sm font-semibold text-slate-800">Nome do Pet</label>
-                        <input type="text" id="pet-name" placeholder="Ex: Mel, Pipoca..." required class="w-full px-4 py-2.5 rounded-xl bg-white text-slate-800 outline-none focus:ring-2 focus:ring-site-coral/50 smooth-transition">
-                    </div>
-
-                    <div class="flex flex-col gap-1">
                         <label class="text-sm font-semibold text-slate-800">Espécie</label>
                         <div class="grid grid-cols-2 gap-3">
                             <button type="button" data-species="cachorro" class="species-btn py-2.5 px-4 rounded-xl bg-white border-2 border-site-coral text-site-coral font-bold smooth-transition">
@@ -177,6 +172,21 @@
                                     <option value="pequeno">Pequeno</option>
                                     <option value="medio">Médio</option>
                                     <option value="grande">Grande</option>
+                                </select>
+                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500">
+                                    <i class="fa-solid fa-chevron-down text-xs"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col gap-1">
+                            <label for="pet-location" class="text-sm font-semibold text-slate-800">Localização</label>
+                            <div class="relative">
+                                <select id="pet-location" required class="w-full px-4 py-2.5 rounded-xl bg-white text-slate-800 outline-none appearance-none focus:ring-2 focus:ring-site-coral/50 smooth-transition">
+                                    <option value="" disabled selected>Selecione a cidade...</option>
+                                    <option value="Recife, PE">Recife, PE</option>
+                                    <option value="Paulista, PE">Paulista, PE</option>
+                                    <option value="Olinda, PE">Olinda, PE</option>
                                 </select>
                                 <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500">
                                     <i class="fa-solid fa-chevron-down text-xs"></i>
@@ -532,18 +542,18 @@
             let usuario = JSON.parse(raw);
             if (usuario && usuario.usuario) usuario = usuario.usuario;
 
-            const especieSelecionada = document
-                .querySelector('.species-btn.border-site-coral')
-                .getAttribute('data-species');
+            const botaospecie = document.querySelector('.species-btn.border-site-coral');
+            const especieSelecionada = botaospecie ? botaospecie.getAttribute('data-species') : 'cachorro';
 
+            // Monta o objeto com todas as propriedades necessárias e fecha corretamente
             const dadosPet = {
-                nome: document.getElementById("pet-name").value,
                 especie: especieSelecionada,
                 raca: document.getElementById("pet-breed").value,
                 idade: document.getElementById("pet-age").value,
                 porte: document.getElementById("pet-size").value,
                 genero: document.getElementById("pet-gender").value,
-                cuidados: document.getElementById("pet-health").value,
+                //cuidados: document.getElementById("pet-health").value,
+                localizacao: document.getElementById("pet-location").value,
                 sobre: document.getElementById("pet-desc").value,
                 imagem_principal: uploadedPhotos.length > 0 ? uploadedPhotos[0].src : "https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&q=80&w=400",
                 dono_nome: usuario?.nome || "Usuário",
@@ -570,29 +580,33 @@
                         videoPreviewPlayer.src = '';
                     }
 
-                    // Abre modal de sucesso
-                    successModal.classList.remove('hidden');
-                    setTimeout(() => {
-                        modalContent.classList.remove('scale-95', 'opacity-0');
-                        modalContent.classList.add('scale-100', 'opacity-100');
-                    }, 50);
+                    // Abre modal de sucesso limpando as classes de animação do Tailwind
+                    if (successModal && modalContent) {
+                        successModal.classList.remove('hidden');
+                        setTimeout(() => {
+                            modalContent.classList.remove('scale-95', 'opacity-0');
+                            modalContent.classList.add('scale-100', 'opacity-100');
+                        }, 50);
+                    }
                 } else {
                     const errData = await resposta.json();
-                    triggerAlertModal("Erro no cadastro", errData.error || "Não foi possível cadastrar.", false);
+                    triggerAlertModal("Erro no cadastro", errData.erro || "Não foi possível cadastrar.", false);
                 }
             } catch (err) {
-                console.error(err);
+                console.error("Erro na requisição:", err);
                 triggerAlertModal("Erro de Conexão", "Não foi possível conectar ao servidor.", false);
             }
         });
 
         if (closeModalBtn) {
             closeModalBtn.addEventListener('click', () => {
-                modalContent.classList.remove('scale-100', 'opacity-100');
-                modalContent.classList.add('scale-95', 'opacity-0');
-                setTimeout(() => {
-                    successModal.classList.add('hidden');
-                }, 3000);
+                if (modalContent && successModal) {
+                    modalContent.classList.remove('scale-100', 'opacity-100');
+                    modalContent.classList.add('scale-95', 'opacity-0');
+                    setTimeout(() => {
+                        successModal.classList.add('hidden');
+                    }, 300);
+                }
             });
         }
     </script>

@@ -64,22 +64,23 @@
                 <a href="meus_animais.html" class="font-fredoka text-xl font-medium text-white/80 hover:text-white pb-1 smooth-transition">
                     Meus pets
                 </a>
-                <a href="#" class="font-fredoka text-xl font-medium text-white/80 hover:text-white pb-1 smooth-transition">
+                <a href="chatInterno.html" class="font-fredoka text-xl font-medium text-white/80 hover:text-white pb-1 smooth-transition">
                     Mensagens
                 </a>
             </div>
             
             <div class="relative">
                 <button id="user-menu-btn" class="flex items-center gap-2 text-white font-fredoka text-base focus:outline-none hover:opacity-90 transition-opacity">
-                    <div class="w-8 h-8 rounded-full bg-white/20 border border-white flex items-center justify-center overflow-hidden">
+                    <div class="w-8 h-8 rounded-full bg-white/20 border border-white flex items-center justify-center overflow-hidden shrink-0">
                         <span id="header-avatar-initials" class="text-xs font-sans font-bold">U</span>
+                        <img id="header-avatar-img" src="" alt="Foto" class="hidden w-full h-full object-cover">
                     </div>
                     <span id="header-user-name">Usuário</span>
                     <i id="user-menu-arrow" class="fa-solid fa-chevron-down text-xs smooth-transition"></i>
                 </button>
 
                 <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-site-lightgreen/30 overflow-hidden font-fredoka py-1 z-50 text-sm">
-                    <a href="perfil_usuario.html" class="flex items-center gap-2 px-4 py-2.5 text-gray-700 bg-slate-50 font-semibold hover:bg-site-lightgreen/10 transition-colors">
+                    <a href="MeuPerfil.html" class="flex items-center gap-2 px-4 py-2.5 text-gray-700 bg-slate-50 font-semibold hover:bg-site-lightgreen/10 transition-colors">
                         <i class="fa-solid fa-user opacity-70"></i> Meu Perfil
                     </a>
                     <a href="meus_animais.html" class="flex items-center gap-2 px-4 py-2.5 text-gray-700 hover:bg-site-lightgreen/20 transition-colors">
@@ -215,7 +216,7 @@
         const btnLogout = document.getElementById('btn-logout');
         const headerUserName = document.getElementById('header-user-name');
         const headerAvatarInitials = document.getElementById('header-avatar-initials');
-
+        const headerAvatarImg = document.getElementById('header-avatar-img');
         // Elementos de Perfil Lateral
         const displayUserName = document.getElementById('display-user-name');
         const displayUserEmail = document.getElementById('display-user-email');
@@ -300,6 +301,19 @@
                 avatarImage.src = usuario.foto;
                 avatarImage.classList.remove('hidden');
                 avatarPlaceholder.classList.add('hidden');
+
+                // Atualiza o Header
+                if (headerAvatarImg) {
+                    headerAvatarImg.src = usuario.foto;
+                    headerAvatarImg.classList.remove('hidden');
+                }
+                if (headerAvatarInitials) {
+                    headerAvatarInitials.classList.add('hidden'); // Esconde a inicial 'U'
+                }
+            } else {
+                // Caso não tenha foto, garante que a inicial apareça
+                if (headerAvatarImg) headerAvatarImg.classList.add('hidden');
+                if (headerAvatarInitials) headerAvatarInitials.classList.remove('hidden');
             }
 
             // Iniciais
@@ -326,30 +340,42 @@
         document.addEventListener('DOMContentLoaded', carregarDadosUsuario);
 
         // Upload Interativo de Imagem de Perfil com persistência no LocalStorage
-        avatarInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    avatarImage.src = event.target.result;
-                    avatarImage.classList.remove('hidden');
-                    avatarPlaceholder.classList.add('hidden');
-                    
-                    // Salva temporariamente a foto no LocalStorage
-                    const raw = localStorage.getItem('usuario_logado');
-                    if (raw) {
-                        let usuarioCompleto = JSON.parse(raw);
-                        let u = usuarioCompleto.usuario ? usuarioCompleto.usuario : usuarioCompleto;
-                        u.foto = event.target.result;
-                        if (usuarioCompleto.usuario) usuarioCompleto.usuario = u;
-                        else usuarioCompleto = u;
-                        localStorage.setItem('usuario_logado', JSON.stringify(usuarioCompleto));
-                    }
-                    triggerToast('Foto Atualizada!', 'Sua foto de perfil foi alterada com sucesso.');
-                };
-                reader.readAsDataURL(file);
+avatarInput.addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const base64Image = event.target.result;
+
+            // 1. Atualiza na barra lateral
+            avatarImage.src = base64Image;
+            avatarImage.classList.remove('hidden');
+            avatarPlaceholder.classList.add('hidden');
+            
+            // 2. Atualiza no Header IMEDIATAMENTE
+            if (headerAvatarImg) {
+                headerAvatarImg.src = base64Image;
+                headerAvatarImg.classList.remove('hidden');
             }
-        });
+            if (headerAvatarInitials) {
+                headerAvatarInitials.classList.add('hidden');
+            }
+
+            // Salva no LocalStorage
+            const raw = localStorage.getItem('usuario_logado');
+            if (raw) {
+                let usuarioCompleto = JSON.parse(raw);
+                let u = usuarioCompleto.usuario ? usuarioCompleto.usuario : usuarioCompleto;
+                u.foto = base64Image;
+                if (usuarioCompleto.usuario) usuarioCompleto.usuario = u;
+                else usuarioCompleto = u;
+                localStorage.setItem('usuario_logado', JSON.stringify(usuarioCompleto));
+            }
+            triggerToast('Foto Atualizada!', 'Sua foto de perfil foi alterada com sucesso.');
+        };
+        reader.readAsDataURL(file);
+    }
+});
 
         // Dropdown Header
         if (userMenuBtn && userDropdown) {
