@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AdotaPet - Login</title>
     <link rel="stylesheet" href="style.css">
+
+    <!-- Google reCAPTCHA -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 <body>
     <header class="navbar">
@@ -19,6 +22,7 @@
     <main class="container">
         <div class="card">
             <h2>Login</h2>
+
             <form id="loginForm">
                 <div class="input-group">
                     <label for="email">E-mail:</label>
@@ -30,11 +34,17 @@
                     <input type="password" id="senhaLogin" placeholder="Digite sua senha" required>
                 </div>
 
+                <!-- reCAPTCHA (Chave de teste oficial do Google) -->
+                <div class="g-recaptcha"
+                     data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI">
+                </div>
+
                 <button type="submit" class="btn-submit">Entrar</button>
             </form>
-            
+
             <p class="footer-text">
-                Novo por aqui? <a href="cadastro.html" class="link-highlight">Cadastre agora</a>
+                Novo por aqui?
+                <a href="cadastro.html" class="link-highlight">Cadastre agora</a>
             </p>
         </div>
     </main>
