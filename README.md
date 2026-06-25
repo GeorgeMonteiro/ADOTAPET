@@ -140,3 +140,54 @@ O AdotaPet busca resolver esse problema oferecendo:
 ## Desenvolvedores
 - George Monteiro
 - Bianka Ibrahim
+
+---
+
+## Como Executar o Projeto
+
+1. Clone o repositório
+git clone <URL_DO_REPOSITORIO>
+cd ADOTAPET-main
+2. Configure o banco de dados PostgreSQL
+
+Crie um banco chamado:
+
+CREATE DATABASE adotapet;
+
+Crie um arquivo .env dentro da pasta Backend com as credenciais do seu banco:
+
+DB_HOST=localhost
+DB_NAME=adotapet
+DB_USER=postgres
+DB_PASSWORD=sua_senha
+DB_PORT=5432
+3. Execute o Backend
+
+## Abra um terminal na pasta Backend:
+
+- cd Backend
+
+- python -m venv venv
+
+- venv\Scripts\activate
+
+- pip install -r requirements.txt
+
+- python app.py
+
+O servidor será iniciado em:
+
+- http://127.0.0.1:5000
+
+4. Execute o Frontend
+
+- Abra o arquivo Frontend/index.html utilizando a extensão Live Server do VS Code.
+
+Ou clique com o botão direito no arquivo index.html e selecione:
+
+Open with Live Server
+
+---
+
+### Pronto
+Com o Backend em execução e o Frontend aberto pelo Live Server, a aplicação estará pronta para uso.
